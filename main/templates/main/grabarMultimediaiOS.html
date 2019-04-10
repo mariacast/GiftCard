@@ -1,0 +1,3768 @@
+
+<html>
+	{% load staticfiles %}
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="description" content="WebRTC code samples">
+		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+		<meta itemprop="description" content="Client-side WebRTC code samples">
+		<meta itemprop="image" content="../../../images/webrtc-icon-192x192.png">
+		<meta itemprop="name" content="WebRTC code samples">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta id="theme-color" name="theme-color" content="#ffffff">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<link rel ="stylesheet" href="/static/main/{{ tema }}/css/style_ios.css">
+		<link href="https://fonts.googleapis.com/css?family=Courgette" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Henny+Penny" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Wendy+One" rel="stylesheet">
+		<title>MediaStream Recording</title>
+
+	</head>
+
+	<body onload="retornarSO('{{ session }}','{{ opciones }}');">
+		<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="logo_gift"/><br>
+		<!--
+		<h3>¿Como deseas sorprender a esa persona especial?</h3>
+
+		<input type="radio"  onclick ="plantillaNo()" id="videoRadio" name="videoRadio" value="video"> Grabar Video<br>
+		<input type="radio" onclick ="plantillaSi()" id="plantillaRadio" name="plantillaRadio" value="plantilla"> Tarjeta prediseñada<br>
+
+		-->
+		<!-- esta opcionn no se utiliza actualmente se deja hay para evitar conflictos-->
+
+
+		<div id="imagenInicialDiv" style="display:none" >
+			<div id="admin">
+				<img src ="/static/main/{{ tema }}/images/admin.png"id="botonAdministrar" onclick="login({{ session }});"/>
+				<img src="/static/main/{{ tema }}/images/cerrar1.png" id="i_cerrarSesion" class="BtnCerrar" onclick="cerrarSesion();"/>
+			</div>
+			{% if tema = "carne" %}
+					<img src ="/static/main/{{ tema }}/images/andres.png" class="andres"/><br><br><br>
+			{% endif %}
+
+			<img id="imgInicial" src="{{ imagenInicial }}">
+			<div id="men_btnab">
+					<img src ="/static/main/{{ tema }}/images/adelan.png" class="siguienteImagen" onclick="nextImagen('{{ pla }}','{{ men }}','{{ can }}','{{ vid }}');" />
+			</div>
+		</div>
+
+		<div id="imagenLibreDiv" style="display:none" >
+			<div id="admin">
+				<img src ="/static/main/{{ tema }}/images/admin.png"id="botonAdministrar" onclick="login({{ session }});"/>
+				<img src="/static/main/{{ tema }}/images/cerrar1.png" id="i_cerrarSesion" class="BtnCerrar" onclick="cerrarSesion();"/>
+			</div>
+
+			<div id="men_btnlib">
+				<img src="/static/main/{{ tema }}/images/atr.png" class="atrasLibre" onclick="plantillaSi();" />
+				<img src ="/static/main/{{ tema }}/images/adelan.png" class="siguienteLibre" onclick="verMensaje('{{ men }}','{{ can }}','{{ vid }}');" />
+
+			</div>
+			<br><br><br>
+
+			<img src="/static/main/{{ tema }}/images/camar.PNG" id="bImg" onclick="document.getElementById('imgInput').click();" />
+			<img src="/static/main/{{ tema }}/images/der1.PNG" id="bGirar" onclick="girarImagen()" />
+			<img src="/static/main/{{ tema }}/images/del1.png" id="bEliImg" onclick="eliminarImagen()" />
+
+			<br>
+			<br>
+
+			<input id="imgInput" type="file" accept="image/*;capture=camera" onchange= "pintarImagen()"style="display: none"/>
+
+			<div id="container">
+				<img id="imgLibre" onload="cargarmarco();"/>
+				 <div  id="imgMarco" >  </div>
+			</div><br><br>
+			<img src="/static/main/{{ tema }}/images/ver1.png" id="bCambiarMarco" onclick="document.getElementById('modal4').style.display='block';" />
+
+
+			<div id="modal4" class="modal4">
+
+			  <!-- Modal content -->
+				<div class="modal-content4">
+					<span class="close4">x</span>
+					<a id="men2" class="titulo_usuario">Seleccione El Marco para la imagen:</a> <br><br>
+					<center>
+						<div id="marcosDiv">
+							<table id="tablaMarcos">
+								{% for marco in marcos %}
+									<tr  id="M_{{ marco.id }}" onclick="ajaxTraerMarco('{{ marco.id }}')" style="cursor: pointer; ">
+										<td align='center' id="celdaMarcos">{{ marco.nombre }}</td>
+									</tr>
+								{% endfor %}
+							</table>
+						</div>
+					</center>
+
+				</div>
+				<!-- mensaje de estado de guardado-->
+
+			</div>
+
+
+			<div id="men_btn">
+			<img src="/static/main/{{ tema }}/images/atr.png" class="atrasLibre" onclick="plantillaSi();" />
+			<img src ="/static/main/{{ tema }}/images/adelan.png" class="siguienteLibre" onclick="verMensaje('{{ men }}','{{ can }}','{{ vid }}');" />
+			</div>
+		</div>
+
+
+
+		<div id="ingresoDiv" style="display:none">
+			<h3>Si deseas registrarte y crear tu mensaje debes hacer</h3><br>
+			<a style="text-decoration: underline; cursor: pointer;" onclick="registrar();"><img src="/static/main/{{ tema }}/images/cli1.png" id="bt_in"/></a>
+			<h3>Si ya estas registrado ingresa y  crea tu mensaje haciendo </h3><br>
+			<a style="text-decoration: underline; cursor: pointer;" onclick="login({{ session }});"><img src="/static/main/{{ tema }}/images/cli1.png" id="bt_in"/></a>
+			<h3>Si deseas ingresar como Anonimo y crear tu mensaje debes hacer </h3><br>
+			<a style="text-decoration: underline; cursor: pointer;" onclick="anonimo();"><img src="/static/main/{{ tema }}/images/cli1.png" id="bt_in"/></a>
+
+		</div>
+
+		<!-- fin de - esta opcionn no se utiliza actualmente se deja hay para evitar conflictos-->
+		<div class="alert alert-danger">
+			{{ mensaje }}
+        </div>
+        <!-- vista  de registrar usuario -->
+		<div id="registroDiv" style="display:none">
+
+			<img src="/static/main/{{ tema }}/images/atr.png" id="i_atrasRegistro" onclick="atrasRegistro();" />
+						<!-- formulario de registro-->
+
+
+			<form id="registroForm" action="{% url 'main:guardarRegistro' %}" method="post">{% csrf_token %}
+
+				<h1 id="treg" class="titulo_usuario3">Registrese</h1><br>
+				<a class="etiqueta_re">Nombre Completo:</a>
+
+				<input type="text" name="nombre" id="nombre" required><br><br>
+
+				<a class="etiqueta_re">Correo: </a>
+				<input type="email" name="correoRegistro" id="correoRegistro" required><br><br>
+
+				<a class="etiqueta_re">Contraseña: </a>
+				<input type="password" id="contrasenaRegistro" name="contrasenaRegistro" required><br><br>
+
+				<a class="etiqueta_re">Confirme contraseña: </a>
+				<input type="password" id="confirmar"name="confirmar" required><br><br>
+
+
+				<img src="/static/main/{{ tema }}/images/re11.png" type="button" id="registro" onclick="guardarRegistro();" value="Registrarse">
+
+			</form>
+			<!-- FIN formulario de registro-->
+			<div id="mensajeRegistro">     </div>
+
+		</div>
+		<!-- FIN vista  de registrar usuario -->
+
+		<!-- Vista de administrar codigos qr - actualmente esta vista se hace en otro template no se quito de aca para evitar posibles lios pero YA NO SE UTILIZA -->
+
+		<div id="administrarDiv" style="display:none">
+			<img src="/static/main/{{ tema }}/images/cerrar1.png"  id="cerrarSesion" class="BtnCerrar" onclick="cerrarSesion();"/>
+			<table id="adminTable" border="1">
+				<tr>
+					<td align="center">FECHA DE GRABACION</td>
+					<td align="center">FECHA DE EXPIRACION</td>
+					<td align="center" colspan="3"> OPCIONES</td>
+
+				</tr>
+				<div id="CodigosAdd"></div>
+
+
+			</table>
+			<div id="mensajeAdmin"></div>
+			<img src="/static/main/{{ tema }}/images/re1.png" id="grabarMensaje" onclick="gograbarMensaje();"/>
+
+		</div>
+		<!-- FIN vista  de ADMINISTRACION -->
+		<!-- INICIO vista  de LOGIN -->
+		<div id="loginDiv" style="display:none">
+			<img src="/static/main/{{ tema }}/images/atr.png"  id="atrasLogin" onclick="gograbarMensaje();"/>
+
+			<form id="loginForm" action="" method="post">{% csrf_token %}
+				<h1 id="tlog" class="titulo_usuario3">Iniciar Sesión</h1><br>
+				<a id="eti_log">Correo:</a>
+				<input type="email" name="correoLogin" id="correoLogin"><br><br>
+
+				<a id="eti_log">Contraseña:</a> <input type="password" name="contrasenaLogin" id ="contrasenaLogin"><br><br>
+				<input type="hidden" id="qr_id_login" name="qr_id_login" value= "{{ qr_id }}"/>
+
+				<img src="/static/main/{{ tema }}/images/ingre.png" id="b_ingresar" type="button" onclick="loginMultimedia();" value="Ingresar">
+
+			</form>
+
+			<!-- fin formulario de login-->
+			<a>¿Olvido la contraseña?</a>
+			<a>¿No tiene cuenta?</a><br>
+			<img src="/static/main/{{ tema }}/images/recup.png" id="Recuperar" onclick="verRecuperacion();"/>
+			<img src="/static/main/{{ tema }}/images/re11.png" id="Registrar" onclick="registrar();"/><br><br>
+			<div id="mensajeLogin"></div> <!-- DIV PARA PINTAR MENSAJES DE ESTADOS  -->
+
+		</div>
+		<!-- FIN vista  de LOGIN -->
+		<!-- INICIO vista cambio de contraseña, despues de haber solicitado recuperacion de contraseña  -->
+		<div id="cambioDiv" style="display:none">
+			<h1>Por favor, cambie su contraseña</h1>
+			<input type="hidden" id="correoCambio" name="correoCambio" />
+			<a id="eti_log1"> Contraseña: </a><br>
+			<input type="password" name="contrasenaCambio" id ="contrasenaCambio"><br><br>
+			<a id="eti_log1"> Confirme la contraseña: </a><br>
+			<input type="password" name="confirmacionCambio" id ="confirmacionCambio"><br><br>
+			<img src="/static/main/{{ tema }}/images/envi.png" id="env" type="button" onclick="cambiarContrasena();"/><br><br>
+			<div id="mensajeCambio">
+			</div>
+		</div>
+		<!-- fin vista cambio de contraseña -->
+		<!--  inicio vista recuperacion de contraseña, para enviar correo de recuperacion-->
+		<div id="recuperacionDiv" style="display:none" >
+			<img src ="/static/main/{{ tema }}/images/atr.png" id="atrasRecuperacion" onclick="login();"/>
+
+			<h3 id="trec">Ingresa el correo del cual deseas recuperar la contraseña, se enviara un correo con la misma.</h3><br>
+			<!-- formulario de recuperar contraseña-->
+			<div id="recuperarForm" >
+
+				<a>Correo:</a> <input type="email" name="correoRecuperacion" id="correoRecuperacion"><br><br>
+
+				<img src ="/static/main/{{ tema }}/images/recup.png" id="brecuperar" type="button" onclick="recuperarContrasena();" value="Recuperar">
+
+			</div>
+			<div id="mensajeRecuperacion"></div> <!-- DIV PARA PINTAR MENSAJES DE ESTADOS  -->
+			<!-- fin formulario de recuperar contraseña-->
+
+		</div>
+		<!-- fin recuperacion de contraseña -->
+		<!-- inicio de vista grabacion de video -->
+		<div id="videoDiv"  style="display:none">
+			<div id="admin">
+				<img src="/static/main/{{ tema }}/images/admin.png" id="botonAdministrar" onclick="login({{ session }});" />
+				<img src="/static/main/{{ tema }}/images/cerrar1.png" id="i_cerrarSesion" class="BtnCerrar" onclick="cerrarSesion();"/>
+			</div>
+
+
+			<img src="/static/main/{{ tema }}/images/atr.png" class="atrasVideo" onclick="backVideo('{{ men }}','{{ can }}','{{ vid }}');"/>
+			<img src="/static/main/{{ tema }}/images/adelan.png" class="siguienteVideo" onclick="verTodo();" /> <br><br>
+			<h1 class="titulo_usuario">GRABA UN VIDEO PARA ESA PERSONA ESPECIAL</h1>
+			<img src="/static/main/{{ tema }}/images/re1.png" id="bgrabar" onclick="document.getElementById('videoArchivo').click();" />
+			<input id ="videoArchivo" type="file" accept="video/*;capture=camcorder" style="display: none;"> <!--input para grabar el video -->
+			<br>
+			<video id="grabacion"  controls></video><br><!--muestra video grabado -->
+
+
+			<div id="modalRepro" style="display: none">
+				<div id="mod">
+					<a id="let">¿Su video no reproduce?</a><br>
+					<img src="/static/main/{{ tema }}/images/cli1.png" id="img_cli" onclick="modalRepro();"/><br>
+				</div>
+				<img src="/static/main/{{ tema }}/images/del1.png" id="ios_eliminarVideo" onclick="eliminarVideo();" />
+			</div><br>
+
+
+			<!-- Modal para ver el mensaje cuando no reproduce video-->
+			<div id="modal2" class="modal2">
+				<div class="modal-content2">
+					<center>
+						<h2>¿No reproduce su Video?</h2>
+					</center>
+
+					<h3 style="text-align: justify">Lamentablemente su Vídeo no reproduce debido a una inconsistencia en la versión de su dispositivo. Sin embargo, se podrá visualizar en su totalidad una vez sea guardado y procesado por el sistema. Continue disfrutando nuestra aplicación. </h3>
+					<img src="/static/main/{{ tema }}/images/cerrar11.png" id="close2" onclick="cerrarRepro();" />
+				</div>
+			</div>
+			<!--Fin modal-->
+			<p id="b64"></p>
+			<div id="men_btnvid">
+				<img src="/static/main/{{ tema }}/images/atr.png" class="atrasVideo" onclick="backVideo('{{ men }}','{{ can }}','{{ vid }}');"/>
+				<img src="/static/main/{{ tema }}/images/adelan.png" class="siguienteVideo" onclick="verTodo();" />
+			</div>
+		</div>
+		<div id="countdown" style="display:none">60</div> <!-- div para pintar el tiempo de duracion del video-->
+		<!-- fin de vista grabacion de video -->
+
+
+		<!--Imagen pantalla completa-->
+		<div id="imagenDiv" style="display: none">
+			<img src="/static/main/{{ tema }}/images/cerrar11.png" id="cerrarFull" onclick="cerrarFull1();"/>
+			<img id="imagenFull" />
+
+		</div>
+		<!---->
+		<!-- inicio vista seleccion de plantilla -->
+		<div id="plantillaDiv" style="display:none" >
+			<div id="admin">
+				<img src ="/static/main/{{ tema }}/images/admin.png" id="botonAdministrar" onclick="login({{ session }});"/>
+				<img src="/static/main/{{ tema }}/images/cerrar1.png" id="cerrarSesion" class="BtnCerrar" onclick="cerrarSesion();" />
+			</div>
+
+			<div id="men_btn">
+				{% if img != "" %}
+					<img src="/static/main/{{ tema }}/images/atr.png" class="i_atrasPlantilla" onclick="verImagenInicial('{{ men }}','{{ can }}','{{ vid }}');"/>
+				{% endif %}
+
+				<img src ="/static/main/{{ tema }}/images/adelan.png" class="siguientePlantilla" onclick="nextPlantilla('{{ men }}','{{ can }}','{{ vid }}');" />
+			</div><br><br><br>
+			<div id="progressNumber" style="font-size:20px;"></div>
+			<h1 class="titulo_usuario">SELECCIONA TU PLANTILLA PARA ESA PERSONA ESPECIAL</h1>
+
+
+			<h2 id="categ" style=float:left>Categorias</h2><br><br><br><br>
+			<!-- lista de categorias y plantillas -->
+			<div id="lista1">
+				<ul id="lis_cat">
+					{% for categoria in categorias %}
+
+						<li >
+							<h2 onclick="traerLista({{categoria.0}})">{{categoria.1}}</h2> <!-- pinta la categoria -->
+							<ul id="imagenPla_{{categoria.0}}" style="display:none"></ul>
+						</li>
+						<div class="listaCategorias" id="{{categoria.0}}" onclick="verimg();"> </div> <!-- div para pintar las plantillas de cada categoria desde javascript -->
+
+					{% endfor %}
+				</ul>
+			</div><br>
+			<!-- fin lista de categorias y plantillas -->
+			<div id="mensajePlantilla"></div>
+			<img src=""  id ="iframe" onclick="ampliarImagen(1);" onload="finCargarImagen()" style="display:none" /> <br><br><!-- div que pinta la plantilla seleccionada-->
+			<img src ="/static/main/{{ tema }}/images/del1.png" id="eliminarPlantilla" onclick="eliminarPlantilla();"/>
+			{% if img != "" %}
+				<img src="/static/main/{{ tema }}/images/atr.png" class="i_atrasPlantilla" onclick="verImagenInicial('{{ men }}','{{ can }}','{{ vid }}');"/>
+			{% endif %}
+			<img src ="/static/main/{{ tema }}/images/adelan.png" class="siguientePlantilla" onclick="nextPlantilla('{{ men }}','{{ can }}','{{ vid }}');" />
+
+		</div>
+		<!-- fin vista seleccion de plantilla -->
+		<!-- inicio vista para escribir mensaje y seleccionar cancion-->
+		<div id ="mensajeDiv" style="display:none" >
+			<div id="admin">
+				<img src="/static/main/{{ tema }}/images/admin.png" id="botonAdministrar" onclick="login({{ session }});" />
+				<img src="/static/main/{{ tema }}/images/cerrar1.png" id="i_cerrarSesion" class="BtnCerrar" onclick="cerrarSesion();"/>
+			</div>
+
+
+			<div id="men_btn">
+				<img src="/static/main/{{ tema }}/images/atr.png" class="atrasMensaje" onclick="plantillaSi();" />
+			    <img src="/static/main/{{ tema }}/images/adelan.png" class="siguienteMensaje" onclick="verVideo('mensaje','{{ men }}','{{ can }}','{{ vid }}')" />
+
+			</div>
+			<br>
+			<!-- escribir mensaje-->
+			<div id="escribirMensaje">
+				<label id="detalleLabel " ><h1 class="titulo_usuario">ESCRIBE TU MENSAJE</h1></label><br>
+				<textArea name="detalle" id="detalle" class="mceEditor" ></textArea>
+				<div id="modal" class="modal">
+					<div class="modal-content">
+						<img src="/static/main/{{ tema }}/images/cerrar11.png" id="cerrarModal" onclick="cerrarModal1();"/><br><br>
+						<h1 class="titulo_usuario">Seleccione su Frase</h1>
+
+
+						<div id="frasesDiv"></div>
+
+
+					</div>
+				</div>
+
+
+			</div>
+			<!-- fin escribir mensaje-->
+			</br>
+			<!-- buscar cancion-->
+			<div id="cancionDiv" >
+				<div id="mensajeCancion"></div>
+				<iframe id="player" src="" onload='document.getElementById("mensajeCancion").innerHTML = "";'  style="display:none"></iframe> <!-- iframe que pinta la cancion seleccionada-->
+				<br>
+				<img src="/static/main/{{ tema }}/images/cancelar1.png" id="eliminarCancion" onclick="eliminarCancion();">
+				<input type="text"  id="queryText" size="50"> <!-- input para escribir la cancion a buscar--><br>
+				<img src="/static/main/{{ tema }}/images/sear2.png" id="b_search" onclick="searchQ();" />
+				<h1 class="titulo_usuario">Busca y escoge una cancion para que le dediques a tu persona especial</h1>&nbsp;
+				<br><br>
+				<div id='list1' onclick="vid_youtube();"></div> <!-- lista de canciones encontradas-->
+				<br>
+			</div>
+			<!-- fin buscar cancion-->
+			<div id="men_btn_can">
+				<img src="/static/main/{{ tema }}/images/atr.png" class="atrasMensaje" onclick="plantillaSi();" />
+			    <img src="/static/main/{{ tema }}/images/adelan.png" class="siguienteMensaje" onclick="verVideo('mensaje','{{ men }}','{{ can }}','{{ vid }}')" />
+
+			</div>
+
+		</div>
+		<!-- fin vista para escribir mensaje y seleccionar cancion-->
+
+
+		<!-- barrar de progreso de cargado -->
+		<center>
+			<div id="carga" style="display: none">
+				<div id="cascara" align="left">
+					<div id="barra" align="left"></div>
+				</div>
+				<h2 id="mensajeCascara">Cargando... </h2>
+			</div>
+		</center>
+		<!-- Fin cargado -->
+
+		<!-- inicio vista para ver todo lo seleccionado y guardado-->
+		<div id="todo" style="display:none">
+			<!-- Div que sirve para esconder los botones al guardar-->
+			<div id="encabezadoDiv">
+				<div id="admin">
+					<img src="/static/main/{{ tema }}/images/admin.png" class="btn_todo" id="botonAdministrar" onclick="login({{ session }});"/>
+					<img src="/static/main/{{ tema }}/images/cerrar1.png"  class="BtnCerrar" id="cerrarSesion" onclick="cerrarSesion();" /><br>
+				</div>
+
+				<img src="/static/main/{{ tema }}/images/atr.png" class="atr_btn" id="atrasTodo" onclick="verVideo('todo','{{ men }}','{{ can }}','{{ vid }}');" /><br><br><br>
+			</div>
+
+			{% if img != ""%}
+				<img src="{{ imagenInicial }}"  id ="imagenInicialFinal" />
+			{% endif %}
+			<!-- fin encabezado-->
+			<p id="mensajeFinal" ></p> <!-- etiqueta que muesta el mensaje escrito previamente -->
+			<center>
+					<img src=""  id ="imagenFinal" onclick="ampliarImagen(2);"/> <!-- iframe que muestra la plantilla seleccionada previamente-->
+			</center>
+			<br>
+			<div id="containerFinal">
+				<img id="imgLibreFinal" />
+				<div  id="imgMarcoFinal" >  </div>
+			</div>
+
+			<br>
+			<br>
+			<iframe id="playerFinal"  ></iframe> <!-- iframe que muestra la cancion seleccionada previamente-->
+			<br>
+			<video id="grabacionFinal" controls></video> <!-- etiqueta que muestra el video grabado previamente-->
+
+
+			<!-- formulario oculta para enviar los datos de lo grabado y seleccionado durante el template-->
+
+			<form id="qrplantilla" action="{% url 'main:guardarMultimedia' %}" method="post">{% csrf_token %}
+
+				<textArea name="idPlantilla" id="idPlantilla" rows="1" cols="1" style="display:none" form="qrplantilla"></textArea>
+				<input type="hidden" id="qr_id" name="qr_id" value= "{{ qr_id }}"/>
+				<label id="detalleLabel " style="display:none" >Escribe tu mensaje</label>
+				<textArea name="detalleForm" id="detalleForm" style="display:none" form="qrplantilla"></textArea>
+				<input type="hidden" id="videoBlob" name="videoBlob" />
+				<input type="hidden" id="imagenBlob" name="imagenBlob" />
+				<input type="hidden" id="posicion" name="posicion" value=0 />
+				<input type="hidden" id="urlMusica" name="urlMusica" />
+
+
+				<input type="hidden" name="tema" id="tema">
+				<input type="hidden" name="marco" id="marco" >
+
+
+
+			</form>
+			<img src="/static/main/{{ tema }}/images/cambtem.png" id="bCambiarTema" onclick="document.getElementById('modal5').style.display='block';" />
+			<div id="modal5" class="modal5">
+
+			  <!-- Modal content -->
+				<div class="modal-content5">
+					<span class="close5">x</span>
+					<a id="men" class="titulo_usuario">Seleccione El tema para los Codigos QR:</a> <br><br>
+
+					<div id="temasDiv">
+						<table id="tablaTemas">
+						{% for tema in temas %}
+							<tr  id="T_{{ tema.id }}" onclick="ajaxTraerTema('{{ tema.id }}')" style="cursor: pointer; ">
+								<td align='center' id="celdaTemas">{{ tema.nombre }}</td>
+							</tr>
+						{% endfor %}
+						</table>
+					</div>
+
+
+				</div>
+				<!-- mensaje de estado de guardado-->
+
+			</div>
+				<br>
+				<br>
+				<div id="mensajeTodo"> </div> <!-- div que muestra el mensaje de guardar commo usuario o anonimo-->	<div id="mensajeTodo"> </div> <!-- div que muestra el mensaje de guardar commo usuario o anonimo-->
+				<br>
+			<center>
+				<img src="/static/main/{{ tema }}/images/sav2.png" type="button" id="guardarMul" style="display:none" value="Guardar" onclick="guardarMulti();">
+			</center>
+
+			<!-- fin formulario-->
+			<div id="encabezadoDiv1">
+				<img src="/static/main/{{ tema }}/images/atr.png" class="atr_btn" id="atrasTodo" onclick="verVideo('todo','{{ men }}','{{ can }}','{{ vid }}');"/>
+			</div>
+
+			<div id="modal3" class="modal3">
+
+			  <!-- Modal content -->
+				<div class="modal-content3">
+					<span class="close">x</span><br>
+					<h2 id="nombreTema"></h2>
+					<h4 id="descripcionTema"></h4>
+					<h3>VISTA PREVIA</h3>
+					<div id="tablaDiv" style="">
+					</div>
+
+					<img id="temaGrande" src="" onclick="quitarImagen();" >
+				</div>
+				<!-- mensaje de estado de guardado-->
+
+			</div>
+
+
+		</div>
+		<div id="pie">
+			<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+		</div>
+
+		<!-- fin vista para ver todo lo seleccionado y guardado-->
+
+
+		<!-- <script type="text/javascript" src="/static/main/js/main.js"></script> -->
+		<script src="/static/main/{{ tema }}/tinymce/js/tinymce/tinymce.min.js"></script>
+		<script  type="text/javascript" src="/static/main/js/ajax.js"></script>
+		<script  type="text/javascript" src="/static/main/js/dom.js"></script>
+		<script  type="text/javascript" src="/static/main/js/basico.js"></script>
+		<script  type="text/javascript" src="/static/main/js/upload.js"></script>
+
+
+
+
+
+
+		<script type="text/javascript">
+
+			var loginSesion =0;
+			var maxRes = 50;
+			var consulta=0;
+			var opcionesSesion="";
+			var categoria ="";
+			var fromSession="";
+			var extendidoSesion=0;
+			var youtube="";
+			var sinOpciones=0;
+			var todoVista=0;
+			var plantillaVista=0;
+			var mensajeVista=0;
+			var videoVista=0;
+			var administrarVista=0;
+			var registroVista=0;
+			var loginVista=0;
+			var recuperarVista=0;
+			var cambioVista=0;
+			var usuarioLogin=0;
+			var ingresoUp =0;
+			var imagenInicialVista =0;
+			var imagenLibreVista =0;
+			var	$tam;
+			var videoBase64=null;
+			var $fromImg;
+			var BASE2 = "{{ BASE2 }}"
+
+			var imagenLibreB64
+			var rotat =0;
+
+			var $h;
+			var $w;
+			var ac;
+			var factor=1;
+
+			var $hF;
+			var $wF;
+			var acF;
+			var factorF=1;
+
+
+			var regis=0;
+			var span = document.getElementsByClassName("close")[0];
+			var panAnt =0;
+			var panL ="";
+			span.onclick = function()
+			{
+				modal3.style.display = "none";
+
+
+			}
+			var span5 = document.getElementsByClassName("close5")[0];
+			span5.onclick = function()
+			{
+				modal5.style.display = "none";
+
+
+			}
+			var span4 = document.getElementsByClassName("close4")[0];
+			span4.onclick = function()
+			{
+				modal4.style.display = "none";
+
+
+			}
+
+
+
+
+			function girarImagen()
+			{
+
+
+				rotat = rotat < 270 ? rotat+90 : 0;
+
+
+
+				if(rotat == 270 || rotat == 90)
+				{
+
+					factor =($h/$w);
+
+
+
+					if(rotat==90)
+					{
+						gId("imgLibre").style.transform ="matrix(0.00,"+factor+",-"+factor+",0.00,0,0)";
+
+					}
+					else
+					{
+						gId("imgLibre").style.transform ="matrix(-0.00,-"+factor+","+factor+",-0.00,0,0)";
+
+					}
+
+				}
+				else
+				{
+					gId("imgLibre").style.transform ="rotate("+rotat+"deg)";
+					factor=1;
+
+				}
+				gId("posicion").value =rotat;
+				pintarMarco();
+
+			}
+
+			function girarImagenFinal()
+			{
+
+				if(rotat == 270 || rotat == 90)
+				{
+
+					factorF =($hF/$wF);
+
+
+
+					if(rotat==90)
+					{
+						gId("imgLibreFinal").style.transform ="matrix(0.00,"+factorF+",-"+factorF+",0.00,0,0)";
+
+					}
+					else
+					{
+						gId("imgLibreFinal").style.transform ="matrix(-0.00,-"+factorF+","+factorF+",-0.00,0,0)";
+
+					}
+
+				}
+				else
+				{
+					gId("imgLibreFinal").style.transform ="rotate("+rotat+"deg)";
+					factorF=1;
+
+				}
+				gId("posicion").value =rotat;
+				pintarMarcoFinal();
+
+			}
+
+			function eliminarImagen()
+			{
+
+				gId("container").style.display="none";
+				gId("containerFinal").style.display="none";
+				document.getElementById("imgLibre").src="";
+				document.getElementById("imgLibreFinal").src="";
+				document.getElementById("imagenBlob").value="";
+				imagenLibreB64="";
+
+
+			}
+
+			function pintarImagen()
+			{
+				gId("container").style.display="block";
+				var imagen = document.getElementById("imagenLibreDiv").querySelector('input[type=file]').files[0];
+				var reader = new window.FileReader();
+				reader.readAsDataURL(imagen);
+				reader.onloadend = function()
+				{
+					rotat=270;
+
+					imagenLibreB64 = reader.result;
+
+					document.getElementById("imgLibre").src=imagenLibreB64;
+					gId("imgLibre").style.margin="auto";
+					gId("imgLibre").style.height="100%";
+
+
+				}
+
+
+				document.getElementById("imgLibre").style.display="block";
+				document.getElementById("imgMarcoFinal").style.display = "block";
+
+				document.getElementById("imgLibre").scrollIntoView();
+
+
+
+			}
+			function cargarmarco()
+			{
+				initImg();
+				girarImagen();
+			}
+
+			function pintarImagenFinal()
+			{
+
+
+
+				gId("containerFinal").style.display="block";
+				document.getElementById("imgLibreFinal").src=imagenLibreB64;
+				gId("imgLibreFinal").style.margin="auto";
+				gId("imgLibreFinal").style.height="100%";
+
+				initImgFinal();
+				girarImagenFinal();
+
+
+
+
+
+				document.getElementById("imgLibreFinal").style.display="block";
+
+
+
+
+
+			}
+			function pintarMarco()
+			{
+
+				var obj = gId("imgLibre");
+
+				var mh = factor * $h;
+
+				var mw = factor * $w;
+
+				if(rotat == 270 || rotat == 90)
+				{
+					gId("imgMarco").style.width=mh+"px";
+					gId("imgMarco").style.height=mw+"px";
+
+					gId("imgMarco").style.left= ((ac-mh)/2)+"px";
+				}
+				else
+				{
+					gId("imgMarco").style.width=mw+"px";
+					gId("imgMarco").style.height=mh+"px";
+					gId("imgMarco").style.left= obj.offsetLeft+"px";
+				}
+
+			}
+
+			function pintarMarcoFinal()
+			{
+
+				var obj = gId("imgLibreFinal");
+
+				var mh = factorF * $hF;
+
+				var mw = factorF * $wF;
+
+				if(rotat == 270 || rotat == 90)
+				{
+					gId("imgMarcoFinal").style.width=mh+"px";
+					gId("imgMarcoFinal").style.height=mw+"px";
+
+					gId("imgMarcoFinal").style.left= ((acF-mh)/2)+"px";
+				}
+				else
+				{
+					gId("imgMarcoFinal").style.width=mw+"px";
+					gId("imgMarcoFinal").style.height=mh+"px";
+					gId("imgMarcoFinal").style.left= obj.offsetLeft+"px";
+				}
+
+			}
+			function initImg()
+			{
+
+				$w = gId("imgLibre").clientWidth;
+				$h = gId("imgLibre").clientHeight;
+				ac = gId("container").clientWidth;
+
+				pintarMarco();
+
+			}
+
+			function initImgFinal()
+			{
+
+				$wF = gId("imgLibreFinal").clientWidth;
+				$hF = gId("imgLibreFinal").clientHeight;
+				acF = gId("containerFinal").clientWidth;
+
+				pintarMarcoFinal();
+
+			}
+
+
+			function ajustarMarco()
+			{
+
+				if(gId("container").style.display=="block" || gId("containerFinal").style.display=="block")
+				{
+					if (document.body.clientWidth<480)
+					{
+						panLA="P";
+					}
+					else if(document.body.clientWidth>=481 && document.body.clientWidth<=1023)
+					{
+						panLA="M";
+					}
+					else
+					{
+						panLA="G";
+					}
+
+					if(panL != panLA )
+					{
+						if(gId("todo").style.display=="block")
+						{
+
+							initImgFinal();
+						}
+						else
+						{
+							initImg();
+						}
+					}
+					else
+					{
+						pan= document.body.clientWidth;
+						if(panAnt != pan)
+						{
+							if(gId("todo").style.display=="block")
+							{
+								initImgFinal();
+							}
+							else
+							{
+								initImg();
+							}
+						}
+						panAnt=pan;
+					}
+					panL=panLA;
+				}
+
+			}
+
+			function nextPlantilla(men,can,vid)
+			{
+				if('{{ lib }}'=="")
+				{
+					verMensaje(men,can,vid);
+				}
+				else
+				{
+					verImagenLibre();
+				}
+			}
+
+
+
+			function nextImagen(pla,men,can,vid )
+			{
+				if(pla != "")
+				{
+					verPlantilla(men,can,vid);
+				}
+				else if('{{ lib }}' != "")
+				{
+					verImagenLibre();
+				}
+				else if(men != "" || can != "")
+				{
+					verMensaje(men,can,vid);
+				}
+				else if(vid != "")
+				{
+					verVideo("mensaje",men,can,vid);
+				}
+				else
+				{
+					verTodo();
+				}
+
+			}
+
+			function ajaxTraerMarco(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaTraerMarco;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/traerMarco/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"id": id});
+			  conexion.send(data);
+
+
+			}
+
+
+
+			function respuestaTraerMarco()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+						if(respuest)
+						{
+
+							document.getElementById("imgMarco").style.backgroundImage= "url('"+respuest.enlace+"')";
+							document.getElementById("imgMarco").style.display="block";
+							document.getElementById("imgMarcoFinal").style.backgroundImage= "url('"+respuest.enlace+"')";
+							document.getElementById("imgMarcoFinal").style.display="block";
+							selectMarco(respuest.id);
+							document.getElementById("modal4").style.display="none";
+
+						}
+
+					}
+				}
+			}
+
+			function selectMarco(id)
+			{
+				var actual = document.getElementById("marco").value;
+
+
+				if(actual != "")
+				{
+					document.getElementById("M_"+actual).style.background="";
+				}
+
+				document.getElementById("M_"+id).style.background="#A0A7B7";
+				document.getElementById("marco").value=id;
+			}
+
+
+
+			function ajaxTraerTema(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaTraerTema;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/traerTema/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"id": id});
+			  conexion.send(data);
+
+
+			}
+
+
+			function respuestaTraerTema()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+						if(respuest)
+						{
+							document.getElementById("nombreTema").innerHTML= respuest.nombre
+							document.getElementById("descripcionTema").innerHTML= respuest.descripcion
+							enlaces= respuest.enlaces
+							var expresionRegular = /\s*;\s*/;
+							var listaEnlaces = enlaces.split(expresionRegular);
+
+							selectTema(respuest.id)
+							var tablaVal = document.getElementById("tImagenes")
+							if(tablaVal)
+							{
+								padre = tablaVal.parentNode;
+								padre.removeChild(tablaVal);
+								regis=0;
+							}
+							var divtable = document.getElementById("tablaDiv");
+							var table = document.createElement("table");
+							table.setAttribute("id","tImagenes");
+							var row = table.insertRow(0);
+							for(i=0;i<listaEnlaces.length;i++)
+							{
+
+								var celda = row.insertCell(regis);
+								var etiImg = document.createElement("IMG");
+								etiImg.setAttribute("src",listaEnlaces[i]);
+								etiImg.setAttribute("class","imgClass");
+								etiImg.setAttribute("id","Imagen_"+i);
+								etiImg.setAttribute("onerror","cargarImagen('"+i+"')");
+								etiImg.setAttribute("onclick","agrandarImagen('"+i+"')");
+								celda.appendChild(etiImg);
+								regis=regis+1
+							}
+							divtable.appendChild(table);
+
+
+
+
+
+						}
+
+
+
+
+
+					}
+				}
+			}
+			function agrandarImagen(id)
+			{
+
+				document.getElementById('temaGrande').src=document.getElementById("Imagen_"+id).src;
+				document.getElementById('temaGrande').style.display="block";
+			}
+			function quitarImagen()
+			{
+
+				document.getElementById('temaGrande').src="";
+				document.getElementById('temaGrande').style.display="none";
+			}
+			function cargarImagen(id)
+			{
+				document.getElementById("Imagen_"+id).style.display="none";
+			}
+			function selectTema(id)
+			{
+				var actual = document.getElementById("tema").value;
+
+
+				if(actual != "")
+				{
+					document.getElementById("T_"+actual).style.background="";
+				}
+
+				document.getElementById("modal3").style.display="block";
+				document.getElementById("T_"+id).style.background="#A0A7B7";
+				document.getElementById("tema").value=id;
+			}
+
+			tinymce.init({
+					mode : "specific_textareas",
+					editor_selector : "mceEditor",
+
+					plugins: "textcolor, emoticons",
+					toolbar: "forecolor backcolor, emoticons",
+				  textcolor_map: [
+					"000000", "Black",
+					"993300", "Burnt orange",
+					"333300", "Dark olive",
+					"003300", "Dark green",
+					"003366", "Dark azure",
+					"000080", "Navy Blue",
+					"333399", "Indigo",
+					"333333", "Very dark gray",
+					"800000", "Maroon",
+					"FF6600", "Orange",
+					"808000", "Olive",
+					"008000", "Green",
+					"008080", "Teal",
+					"0000FF", "Blue",
+					"666699", "Grayish blue",
+					"808080", "Gray",
+					"FF0000", "Red",
+					"FF9900", "Amber",
+					"99CC00", "Yellow green",
+					"339966", "Sea green",
+					"33CCCC", "Turquoise",
+					"3366FF", "Royal blue",
+					"800080", "Purple",
+					"999999", "Medium gray",
+					"FF00FF", "Magenta",
+					"FFCC00", "Gold",
+					"FFFF00", "Yellow",
+					"00FF00", "Lime",
+					"00FFFF", "Aqua",
+					"00CCFF", "Sky blue",
+					"993366", "Red violet",
+					"FFFFFF", "White",
+					"FF99CC", "Pink",
+					"FFCC99", "Peach",
+					"FFFF99", "Light yellow",
+					"CCFFCC", "Pale green",
+					"CCFFFF", "Pale cyan",
+					"99CCFF", "Light sky blue",
+					"CC99FF", "Plum"
+				  ],
+
+
+					setup : function (instance) {
+						 instance.on("keydown", function(e) {
+								 var Keycode = (e.keyCode ? e.keyCode : e.which);
+								 var texto = tinyMCE.activeEditor.getBody().textContent;
+								 document.getElementById("detalle").value = "";
+								 document.getElementById("detalle").value = texto;
+								 if(Keycode==13)
+								 {
+									 document.getElementById("nue");
+
+									 ajaxFrases();
+
+								 }
+
+						   });
+					}
+
+				 });
+
+			document.getElementById('detalle').onkeypress = function(e)
+			{
+				if (!e) e = window.event;
+				var keyCode = e.keyCode || e.which;
+				if (keyCode == '13'){
+				  document.getElementById("nue");
+
+				  ajaxFrases();
+				  return false;
+				}
+			}
+			function vid_youtube()
+			{
+				document.getElementById("player").style.display = "block";
+			}
+			function verimg()
+			{
+				document.getElementById("iframe").style.display = "block";
+			}
+			function modalRepro()
+			{
+				var modal2 = document.getElementById('modal2');
+
+
+
+				modal2.style.display = "block";
+
+			}
+
+			function cerrarRepro()
+			{
+				var modal2 = document.getElementById('modal2');
+
+				modal2.style.display = "none";
+
+			}
+
+			function enviarGuardar()
+			{
+
+
+				if(document.getElementById('detalleForm').value=='<p><br data-mce-bogus="1"></p>' || document.getElementById('detalleForm').value == "<p>&nbsp;<br></p>")
+				{
+					document.getElementById('detalleForm').value=""
+				}
+
+				if(document.getElementById('imagenBlob').value=="" && document.getElementById('videoBlob').value=="" && document.getElementById('detalleForm').value=="" && document.getElementById('idPlantilla').value=="" && document.getElementById('urlMusica').value=="")
+				{
+					document.getElementById("mensajeTodo").innerHTML= "";
+					document.getElementById("mensajeTodo").innerHTML= "Debe escoger una plantilla, una cancion, escribir un mensaje o grabar un video";
+					document.getElementById("mensajeLogin").innerHTML= "";
+					document.getElementById("mensajeLogin").innerHTML= "Debe escoger una plantilla, una cancion, escribir un mensaje o grabar un video";
+
+				}
+				else
+				{
+
+					window.scrollTo(0,0)
+					document.getElementById("qrplantilla").submit();
+				}
+
+			}
+
+			function ampliarImagen(fromImagen)
+			{
+				$fromImg=fromImagen;
+				var imagenSRC = document.getElementById('iframe').src;
+				document.getElementById('imagenFull').src = imagenSRC;
+				document.getElementById('plantillaDiv').style.display = "none";
+				document.getElementById('todo').style.display = "none";
+				document.getElementById('imagenDiv').style.display = "block";
+
+
+			}
+
+			function cerrarFull1()
+			{
+				document.getElementById('imagenFull').src = "";
+				document.getElementById('imagenDiv').style.display = "none";
+				if($fromImg=="2")
+				{
+					document.getElementById('todo').style.display = "block";
+				}
+				else
+				{
+					document.getElementById('plantillaDiv').style.display = "block";
+				}
+
+			}
+
+			function ajaxFrases()
+			{
+
+			  // Obtener la instancia del objeto XMLHttpRequest
+			  //var texto= document.getElementById("detalle").value;
+			  tinyMCE.activeEditor.getBody().textContent;
+			  var texto = tinyMCE.activeEditor.getBody().textContent;
+
+			  texto = texto.trim();
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaFrases;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/consultarFrases/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("texto="+texto+"&categoria="+categoria);
+
+			}
+
+
+			function respuestaFrases()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+						respuest = JSON.parse(respuest);
+
+						if(respuest!="")
+						{
+
+							document.getElementById("frasesDiv").innerHTML="";
+							for(c=0; c < respuest.length; c++)
+							{
+
+								var list = document.getElementById("frasesDiv");
+								var li = document.createElement("ol");
+								li.setAttribute("onclick","pegarTexto('"+respuest[c][0]+"');");
+								li.setAttribute("style","cursor: pointer");
+
+								li.innerHTML = "<h3 class='frasesList'>"+respuest[c][1].substr(0,90)+"</h3>"
+								list.appendChild(li);
+							}
+							abrirModal();
+
+							//document.getElementById("frasesDiv").innerHTML = respuest;
+
+
+						}
+
+
+					}
+				}
+			}
+
+			function pegarTexto(id)
+			{
+
+
+				ajaxPegarFras(id)
+			}
+
+			function ajaxPegarFras(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaPegarFras;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/pegarFras/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("id="+id);
+
+			}
+
+
+			function respuestaPegarFras()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+						respuest = JSON.parse(respuest);
+
+						if(respuest!="")
+						{
+
+							document.getElementById("detalle").value= "";
+							document.getElementById("detalle").value= respuest;
+							tinyMCE.activeEditor.setContent('');
+							tinymce.activeEditor.execCommand('mceInsertContent', false, respuest);
+							cerrarModal1();
+							//document.getElementById("frasesDiv").innerHTML = respuest;
+
+
+						}
+
+
+					}
+				}
+			}
+			function guardarMulti()
+			{
+				// valida si hay usuario logeado
+
+				if(loginSesion==1)
+				{
+					document.getElementById("mensajeTodo").innerHTML= "";
+
+					//si esta logeado enviar inmediatamente el submit
+
+					if((videoBase64!=null && videoBase64!="") && (imagenLibreB64!=null && imagenLibreB64!=""))
+					{
+						recTodo(imagenLibreB64);
+
+					}
+					else
+					{
+						if(videoBase64!=null && videoBase64!="")
+						{
+							rec(videoBase64);
+						}
+						else if(imagenLibreB64!=null && imagenLibreB64!="")
+						{
+							recImg(imagenLibreB64);
+						}
+						else
+						{
+
+							enviarGuardar();
+						}
+					 }
+
+
+					//document.getElementById("qrplantilla").submit();
+				}
+				else
+				{
+					//si no, pregunta si desea iniciar sesion o enviar como anonimo
+					document.getElementById("mensajeTodo").innerHTML= "<h3 id='letra1'>Desea guardar mensaje como :</h3><img src ='/static/main/{{ tema }}/images/reg.png' id='men_usu' style='cursor: pointer;' onclick='login(0,1,1);'/><img src ='/static/main/{{ tema }}/images/anoni.png' id='men_usu' style='cursor: pointer;' onclick='saveMulti();'>";
+
+				}
+			}
+
+			function saveMulti()
+			{
+				//cuando dan click en guardar como anonimo ingresa a esta funcion a hacer el submit
+				document.getElementById("mensajeTodo").innerHTML= "";
+
+				if((videoBase64!=null && videoBase64!="") && (imagenLibreB64!=null && imagenLibreB64!=""))
+				{
+					recTodo(imagenLibreB64);
+
+
+				}
+				else
+				{
+					if(videoBase64!=null && videoBase64!="")
+					{
+						rec(videoBase64);
+					}
+					else if(imagenLibreB64!=null && imagenLibreB64!="")
+					{
+
+						recImg(imagenLibreB64);
+					}
+					else
+					{
+
+						enviarGuardar();
+					}
+				 }
+
+
+			}
+
+			function rec(r)
+			{
+
+				window.scrollTo(0,0)
+				gId("mensajeCascara").innerHTML="Cargando Multimedia...";
+				partialClear()
+
+				var code = {{ qr_id }};
+				document.getElementById("encabezadoDiv").style.display = "none"
+				document.getElementById("loginDiv").style.display = "none"
+				document.getElementById("cascara").style.display = "block"
+				document.getElementById("carga").style.display = "block"
+				document.getElementById("videoBlob").value = code+".mp4";
+				upName = code+".mp4";
+				upData = r;
+				$tam = upData.length;
+				upUrl = '*'+BASE2+'/main/subirVideo/';
+				upAction = progreso;
+				partialUpload('');
+			}
+
+			function progreso()
+			{
+				var pro = ((($tam-upData.length)/$tam)*100).toFixed(0)
+				gId("barra").style.width = pro+"%";
+				console.log(pro);
+
+				if(upFin == 1)
+				{
+
+					enviarGuardar();
+					hide('cascara');
+				}
+			}
+
+
+			function recImg(r)
+			{
+				r =  document.getElementById("imgLibre").src;
+				window.scrollTo(0,0)
+				var code = {{ qr_id }};
+				document.getElementById("encabezadoDiv").style.display = "none"
+				document.getElementById("loginDiv").style.display = "none"
+
+				document.getElementById("carga").style.display = "block"
+				document.getElementById("cascara").style.display = "block"
+				document.getElementById("imagenBlob").value = "I_"+code+".png";
+				partialClear()
+
+				upName = "I_"+code+".png";
+				upData = r;
+				$tam = upData.length;
+
+				upUrl = '*'+BASE2+'/main/subirImagen/';
+				upAction = progresoImg;
+				partialUpload('');
+			}
+
+			function progresoImg()
+			{
+				var pro = ((($tam-upData.length)/$tam)*100).toFixed(0)
+				gId("barra").style.width = pro+"%";
+				console.log(pro);
+
+				if(upFin == 1)
+				{
+
+					enviarGuardar();
+					hide('cascara');
+				}
+			}
+
+
+			function recTodo(r)
+			{
+
+				window.scrollTo(0,0)
+				var code = {{ qr_id }};
+				document.getElementById("encabezadoDiv").style.display = "none"
+				document.getElementById("loginDiv").style.display = "none"
+
+				document.getElementById("carga").style.display = "block"
+				document.getElementById("cascara").style.display = "block"
+				document.getElementById("imagenBlob").value = "I_"+code+".png";
+				partialClear()
+
+				upName = "I_"+code+".png";
+				upData = r;
+				$tam = upData.length;
+
+				upUrl = '*'+BASE2+'/main/subirImagen/';
+				upAction = progresoTodo;
+				partialUpload('');
+			}
+
+			function progresoTodo()
+			{
+				var pro = ((($tam-upData.length)/$tam)*100).toFixed(0)
+				gId("barra").style.width = pro+"%";
+				console.log(pro);
+
+				if(upFin == 1)
+				{
+					hide('cascara');
+					rec(videoBase64)
+
+				}
+			}
+
+
+			function searchQ()
+			{
+				//funcion que busca la cancion y utiliza la api de youtube
+
+				query = document.getElementById('queryText').value;
+				email = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50'+
+				'&order=viewCount&q='+ query + '&key=AIzaSyDbx63FpA0m64gAa0oK8RlI6yxGfQjZWUU'+
+				'&callback=myPlan';
+				var oldsearchS = document.getElementById('searchS');
+				if(oldsearchS)
+				{
+				oldsearchS.parentNode.removeChild(oldsearchS);
+				}
+				var s = document.createElement('script');
+				s.setAttribute('src', email);
+				s.setAttribute('id','searchS');
+				s.setAttribute('type','text/javascript');
+				document.getElementsByTagName('head')[0].appendChild(s);
+			}
+			function myPlan(response)
+			{
+				//funcion que pinta la lista de canciones
+				var stList = '<table id="res1" cellspacing="1" width="100%"><tbody>';
+
+				for (var i=0; i<response.items.length;i++)
+				{
+					var vid = response.items[i].id.videoId;
+					var tit = response.items[i].snippet.title;
+					if(typeof vid != 'undefined')
+					{
+						stList += '<tr><td id = "celda"style="width:80px;">'+
+						'<a class="show" href="#" title="'+ vid + '" onclick="playVid(this);'+
+						' return false">'+
+						'<img  width="80" height="60" src="http://img.youtube.com/vi/'+
+						vid +'/default.jpg"></a></td>'+
+						'<td id = "celda" style="vertical-align:top"><b>'+(i+1)+'</b>-'+ tit +'</td></tr>';
+					}
+				}
+				document.getElementById('list1').innerHTML = stList + '</tbody></table>';
+				document.getElementById("list1").style.display = "block";
+			}
+
+			function playVid(thi)
+			{
+				//funcion que pinta la cancion seleccionada
+				document.getElementById("eliminarCancion").style.display = "block";
+				document.getElementById("mensajeCancion").innerHTML = "";
+				document.getElementById("mensajeCancion").innerHTML = "<img src='/static/main/{{ tema }}/images/loading.gif' id='loading'/>";
+				consulta =1;
+				var st = 'https://www.youtube.com/embed/'+thi.title;
+
+				document.getElementById("player").style.visibility = "visible";
+				document.getElementById('player').src = st;
+				youtube=st;
+				document.getElementById('playerFinal').src = st;
+			}
+			function gograbarMensaje()
+			{
+
+				//funcion que salia de la vista de administrador. actualmente no se utiliza porque se paso a otro template, se deja aqui para evtar posibles conflictos
+				if(todoVista == 0 || usuarioLogin==0)
+				{
+				location.reload();
+				}
+				else
+				{
+					document.getElementById("mensajeTodo").innerHTML= "";
+					verTodo();
+				}
+				//loginSesion=1;
+
+				//retornarSO(loginSesion,opcionesSesion)
+			}
+			function verAdministrar()
+			{
+				//funcion que lleva al template de administrar codigos qr
+					if(ingresoUp == 1 && loginVista == 0)
+					{
+						conf = confirm("Se perderan todos los cambios ¿Desa continuar?");
+						if(conf == true)
+						{
+							document.getElementById("mensajeAdmin").innerHTML= "";
+							document.getElementById("administrarDiv").style.display = "block";
+							document.getElementById("plantillaDiv").style.display = "none";
+							document.getElementById("imagenInicialDiv").style.display = "none";
+							document.getElementById("imagenLibreDiv").style.display = "none";
+							document.getElementById("videoDiv").style.display = "none";
+							document.getElementById("mensajeDiv").style.display = "none";
+							document.getElementById("ingresoDiv").style.display = "none";
+							document.getElementById("loginDiv").style.display = "none";
+							document.getElementById("todo").style.display = "none";
+							document.getElementsByClassName("BtnCerrar")[0].style.display = "block";
+							document.getElementsByClassName("BtnCerrar")[1].style.display = "block";
+							document.getElementsByClassName("BtnCerrar")[2].style.display = "block";
+							document.getElementsByClassName("BtnCerrar")[3].style.display = "block";
+							document.getElementsByClassName("BtnCerrar")[4].style.display = "block";
+							document.getElementsByClassName("BtnCerrar")[5].style.display = "block";
+							document.getElementsByClassName("BtnCerrar")[6].style.display = "block";
+							todoVista=0;
+							plantillaVista=0;
+							mensajeVista=0;
+							videoVista=0;
+							registroVista=0;
+							loginVista=0;
+							recuperarVista=0;
+							administrarVista=1;
+							cambioVista=0;
+							imagenInicialVista =0;
+							imagenLibreVista =0;
+
+
+							location.href= "/main/administracion/"	;
+							//ajaxCodigos();
+						}
+					}
+					else
+					{
+						document.getElementById("mensajeAdmin").innerHTML= "";
+						document.getElementById("administrarDiv").style.display = "block";
+						document.getElementById("plantillaDiv").style.display = "none";
+						document.getElementById("imagenInicialDiv").style.display = "none";
+						document.getElementById("imagenLibreDiv").style.display = "none";
+						document.getElementById("videoDiv").style.display = "none";
+						document.getElementById("mensajeDiv").style.display = "none";
+						document.getElementById("ingresoDiv").style.display = "none";
+						document.getElementById("loginDiv").style.display = "none";
+						document.getElementById("todo").style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[0].style.display = "block";
+						document.getElementsByClassName("BtnCerrar")[1].style.display = "block";
+						document.getElementsByClassName("BtnCerrar")[2].style.display = "block";
+						document.getElementsByClassName("BtnCerrar")[3].style.display = "block";
+						document.getElementsByClassName("BtnCerrar")[4].style.display = "block";
+						document.getElementsByClassName("BtnCerrar")[5].style.display = "block";
+						document.getElementsByClassName("BtnCerrar")[6].style.display = "block";
+						todoVista=0;
+						plantillaVista=0;
+						mensajeVista=0;
+						videoVista=0;
+						registroVista=0;
+						loginVista=0;
+						recuperarVista=0;
+						administrarVista=1;
+						cambioVista=0;
+						imagenInicialVista =0;
+						imagenLibreVista =0;
+
+						location.href= "/main/administracion/";
+						//ajaxCodigos();
+
+					}
+
+
+
+
+			}
+			//  trae la lista de codigos qr para la vista de administracion.actualmente no se utiliza
+			function ajaxCodigos()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaCodigos;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/codigosAntiguos/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send();
+
+			}
+
+
+			function respuestaCodigos()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+						respuest = JSON.parse(respuest);
+
+						if(respuest)
+						{
+
+							location.href= "/main/administracion/";
+
+						}
+						else
+						{
+							document.getElementById("mensajeCambio").innerHTML= "Error al guardar la contraseña nueva"
+						}
+
+					}
+				}
+			}
+
+			//fin lista de codigos
+			/*
+			function extenderGrabacion(id)
+			{
+
+					ajaxExtender(id)
+
+			}
+
+			function ajaxExtender(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaExtender;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/extenderGrabacion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("code_id="+id);
+
+			}
+
+
+			function respuestaExtender()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje!="")
+						{
+							document.getElementById("mensajeAdmin").innerHTML= "Tiempo Extendido con Exito"
+							extendidoSesion=1;
+						}
+
+					}
+				}
+			}
+
+
+
+			function verGrabacion(id)
+			{
+
+					ajaxVer(id)
+
+			}
+
+			function ajaxVer(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaVer;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/verGrabacion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("code_id="+id);
+
+			}
+
+
+			function respuestaVer()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje!="")
+						{
+							mensaje= mensaje.substring(1, mensaje.length -1);
+
+							window.open(mensaje, '_blank');
+						}
+
+					}
+				}
+			}
+
+
+
+			function eliminarGrabacion(id)
+			{
+				conf = confirm("¿Realmente desea borrar el mensaje?")
+				if(conf == true)
+				{
+					ajaxEliminar(id)
+				}
+			}
+
+			function ajaxEliminar(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEliminar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/eliminarGrabacion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("code_id="+id);
+
+			}
+
+
+			function respuestaEliminar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje!="")
+						{
+
+							login(1)
+						}
+
+					}
+				}
+			}
+			*/
+
+			//funcion par cambiar las contraseñas
+			function cambiarContrasena()
+			{
+
+				if(document.getElementById("contrasenaCambio").value == document.getElementById("confirmacionCambio").value)
+				{
+					ajaxCambio();
+				}
+				else
+				{
+					document.getElementById("mensajeCambio").innerHTML= "Contrasenas distintas, intentalo de nuevo";
+				}
+			}
+
+
+			//ajax par cambiar las contraseñas
+			function ajaxCambio()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaCambio;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/cambiarContrasena/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("contrasenaCambio="+document.getElementById("contrasenaCambio").value+"&correoCambio="+document.getElementById("correoCambio").value);
+
+			}
+
+
+			function respuestaCambio()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje==1)
+						{
+
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Cambio de contraseña exitoso";
+							//retornarSO(loginSesion,opcionesSesion);
+							login();
+						}
+						else
+						{
+							document.getElementById("mensajeCambio").innerHTML= "Error al guardar la contraseña nueva";
+						}
+
+					}
+				}
+			}
+			//recuperar la contraseña envio de datos a la view
+
+			function recuperarContrasena()
+			{
+				document.getElementById("mensajeRecuperacion").innerHTML= "<h3>Cargando..</h3>";
+				document.getElementById("brecuperar").onclick = false;
+				ajaxRecuperacion();
+			}
+
+
+
+			function ajaxRecuperacion()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaRecuperacion;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/recuperarCorreo/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("correoRecuperacion="+document.getElementById("correoRecuperacion").value);
+
+			}
+
+
+			function respuestaRecuperacion()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje)
+						{
+							if(mensaje== 1)
+							{
+								men = "Error al enviar correo, intentalo de nuevo";
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= men;
+							}
+
+							else if(mensaje==3)
+							{
+								men = "Error al enviar correo, intentalo de nuevo";
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= men;
+							}
+							else if(mensaje==4)
+							{
+								men = "Correo no Registrado";
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= men;
+								document.getElementById("brecuperar").onclick = recuperarContrasena;
+							}
+							else if(mensaje== 2)
+							{
+								login();
+								men = "Se ha enviado la contrasena a tu correo";
+								document.getElementById("mensajeLogin").innerHTML= "";
+								document.getElementById("mensajeLogin").innerHTML= men;
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("brecuperar").onclick = recuperarContrasena;
+							}
+							else
+							{
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= "Intenta de nuevo";
+								document.getElementById("brecuperar").onclick = recuperarContrasena;
+							}
+						}
+
+					}
+				}
+			}
+			//cerrar sesion
+			function cerrarSesion()
+			{
+				if(plantillaVista ==1 || mensajeVista == 1 || videoVista == 1 || todoVista == 1)
+				{
+
+					conf = confirm("Se perderan todos los cambios ¿Desa continuar?");
+					if(conf == true)
+					{
+
+						document.getElementsByClassName("BtnCerrar")[0].style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[1].style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[2].style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[3].style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[4].style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[5].style.display = "none";
+						document.getElementsByClassName("BtnCerrar")[6].style.display = "none";
+						ajaxCerrar();
+					}
+				}
+				else
+				{
+
+					document.getElementsByClassName("BtnCerrar")[0].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[1].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[2].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[3].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[4].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[5].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[6].style.display = "none";
+					ajaxCerrar();
+				}
+
+			}
+			function ajaxCerrar()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaCerrar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/cerrarMultimedia/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("qr_id="+qr_id+"&correoLogin="+correoLogin+"&contrasenaLogin="+contrasenaLogin);
+
+			}
+
+
+			function respuestaCerrar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje==1)
+						{
+							location.reload();
+							ingresoUpp = 0;
+						}
+
+					}
+				}
+			}
+			//funcion que valida los datos del formulario de login
+			function loginMultimedia()
+			{
+
+				if(document.getElementById("correoLogin").value=="")
+				{
+					document.getElementById("mensajeLogin").innerHTML= "";
+					document.getElementById("mensajeLogin").innerHTML= "El campo Correo no puede ser vacio";
+				}
+				else if(document.getElementById("contrasenaLogin").value=="")
+				{
+					document.getElementById("mensajeLogin").innerHTML= "";
+					document.getElementById("mensajeLogin").innerHTML= "El campo Contrasena no puede ser vacio";
+				}
+				else
+				{
+					expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+					if ( !expr.test(document.getElementById("correoLogin").value) )
+					{
+						document.getElementById("mensajeLogin").innerHTML= "";
+						document.getElementById("mensajeLogin").innerHTML= "El campo Correo debe tener ser una direccion de electronico correcta";
+
+					}
+					else
+					{
+
+							correoLogin = document.getElementById("correoLogin").value;
+							contrasenaLogin =document.getElementById("contrasenaLogin").value;
+							qr_id =document.getElementById("qr_id_login").value;
+							conectarLogin(qr_id,correoLogin,contrasenaLogin); //ajax login
+
+					}
+				}
+			}
+			//ajax login
+			function conectarLogin(qr_id, correoLogin, contrasenaLogin)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaLogin;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/loginMultimedia/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("qr_id="+qr_id+"&correoLogin="+correoLogin+"&contrasenaLogin="+contrasenaLogin);
+
+			}
+
+
+			function respuestaLogin()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+						mensaje = JSON.parse(mensaje);
+
+						if(mensaje[0]==1)
+						{
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Correo no registrado";
+						}
+						else if(mensaje[0]==2)
+						{
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Contrasena incorrecta";
+						}
+						else if(mensaje[0]==3)
+						{
+
+							ingresoUpp = 1;
+							if(todoVista==1 && usuarioLogin == 1)
+							{
+								//si esta parado en la vista de todo lo seleccionado y ya esta logeado se hace el submit
+								if(videoBase64==null || videoBase64=="")
+								{
+									enviarGuardar();
+								}
+								else
+								{
+									rec(videoBase64)
+								}
+							}
+							else
+							{	// si no va a la vista de administracion
+								verAdministrar();
+							}
+
+
+
+						}
+						else if(mensaje[0]==4)
+						{
+							//si se solicito recuperacion de contraseña va a la vista de cambiar la contraseña
+							document.getElementById("correoCambio").value= mensaje[1];
+							verCambio();
+
+
+						}
+
+					}
+				}
+			}
+			function guardarRegistro()
+			{
+
+				//validar los datos para enviar el registro de un nuevo usuario
+				if(document.getElementById("nombre").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Nombre no puede ser vacio";
+				}
+				else if(document.getElementById("correoRegistro").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Correo no puede ser vacio";
+				}
+				else if(document.getElementById("contrasenaRegistro").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Contrasena no puede ser vacio";
+				}
+				else if(document.getElementById("confirmar").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Confirmar no puede ser vacio";
+				}
+				else{
+					contrasena = document.getElementById("contrasenaRegistro").value;
+					confirmar = document.getElementById("confirmar").value;
+					expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+					if ( !expr.test(document.getElementById("correoRegistro").value) )
+					{
+						document.getElementById("mensajeRegistro").innerHTML= "";
+						document.getElementById("mensajeRegistro").innerHTML= "El campo Correo debe tener ser una direccion de electronico correcta";
+
+					}
+					else
+					{
+						if(contrasena==confirmar)
+						{
+							nombre = document.getElementById("nombre").value;
+							correoRegistro = document.getElementById("correoRegistro").value;
+							contrasenaRegistro =document.getElementById("contrasenaRegistro").value;
+
+							conectarRegistro(nombre, correoRegistro, contrasenaRegistro);  //ajax para guardar registro
+						}else{
+							document.getElementById("mensajeRegistro").innerHTML= "";
+							document.getElementById("mensajeRegistro").innerHTML= "Las contraseñas son diferentes";
+						}
+					}
+				}
+			}
+
+			function conectarRegistro(nombre, correoRegistro, contrasenaRegistro)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaRegistro;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/guardarRegistro/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("nombre="+nombre+"&qr_id="+qr_id+"&correoRegistro="+correoRegistro+"&contrasenaRegistro="+contrasenaRegistro);
+
+			}
+
+
+			function respuestaRegistro()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+						if(mensaje==1)
+						{
+							login()
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Registro Exitoso, Inicia sesion.";
+							document.getElementById("nombre").value = "";
+							document.getElementById("correoRegistro").value = "";
+							document.getElementById("contrasenaRegistro").value = "";
+							document.getElementById("confirmar").value = "";
+						}
+						else if(mensaje==2)
+						{
+							document.getElementById("mensajeRegistro").innerHTML= "";
+							document.getElementById("mensajeRegistro").innerHTML= "El correo ya se encuentra registrado.";
+						}
+
+
+					}
+				}
+			}
+			function registrar()
+			{
+				//muestra vista de registrar
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("cambioDiv").style.display = "none";
+				document.getElementById("registroDiv").style.display = "block";
+				if(usuarioLogin==1)
+				{
+					todoVista=1;
+				}
+				else
+				{
+					todoVista=0;
+				}
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=1;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+
+			}
+			function login(session,from,usuarioRegis)
+			{
+
+				document.getElementById("mensajeLogin").innerHTML= "";
+				//muestra vista de login
+				document.getElementById("correoLogin").value = "";
+				document.getElementById("contrasenaLogin").value = "";
+
+				if(recuperarVista==1 || registroVista==1 || cambioVista == 1)
+				{
+
+					usuarioRegis=1;
+				}
+				if(sinOpciones == 1)
+				{
+					usuarioRegis=1;
+
+				}
+				if(usuarioRegis== 1)
+				{
+					usuarioLogin=1;
+				}
+				else
+				{
+					usuarioLogin=0;
+				}
+
+				fromSession = from;
+				if(loginSesion==1)
+				{
+					session=1;
+				}
+				//problema login recuperar contraseña
+				if(recuperarVista==1 && todoVista != 1)
+				{
+					usuarioLogin=0;
+				}
+				if(recuperarVista==1 && todoVista == 1)
+				{
+					usuarioLogin=1;
+				}
+
+				//fin
+
+				if(session==1)
+				{
+					//si hay session iniciada se muestran los botones de cerrar
+					document.getElementsByClassName("BtnCerrar")[0].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[1].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[2].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[3].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[4].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[5].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[6].style.display = "block";
+
+
+					verAdministrar(from);
+
+
+				}
+				else
+				{
+					//si no hay sesion iniciada y el login siendo llamado desde el boton "administrar" es accionado desde la plantilla mensaje o video mostramos la vista de login
+					if(plantillaVista ==1 || mensajeVista == 1 || videoVista == 1 || usuarioRegis != 1 )
+					{
+
+						conf = confirm("Se perderan todos los cambios ¿Desa continuar?");
+						if(conf == true)
+						{
+							document.getElementById("administrarDiv").style.display = "none";
+							document.getElementById("plantillaDiv").style.display = "none";
+							document.getElementById("imagenInicialDiv").style.display = "none";
+							document.getElementById("imagenLibreDiv").style.display = "none";
+							document.getElementById("videoDiv").style.display = "none";
+							document.getElementById("mensajeDiv").style.display = "none";
+							document.getElementById("ingresoDiv").style.display = "none";
+							document.getElementById("registroDiv").style.display = "none";
+							document.getElementById("recuperacionDiv").style.display = "none";
+							document.getElementById("todo").style.display = "none";
+							document.getElementById("cambioDiv").style.display = "none";
+							document.getElementById("loginDiv").style.display = "block";
+
+
+							plantillaVista=0;
+							imagenInicialVista =0;
+							imagenLibreVista =0;
+							mensajeVista=0;
+							videoVista=0;
+							registroVista=0;
+							loginVista=1;
+							recuperarVista=0;
+							administrarVista=0;
+							cambioVista=0;
+
+						}
+					}
+					else
+					{
+						document.getElementById("administrarDiv").style.display = "none";
+						document.getElementById("plantillaDiv").style.display = "none";
+						document.getElementById("imagenInicialDiv").style.display = "none";
+						document.getElementById("imagenLibreDiv").style.display = "none";
+						document.getElementById("videoDiv").style.display = "none";
+						document.getElementById("mensajeDiv").style.display = "none";
+						document.getElementById("ingresoDiv").style.display = "none";
+						document.getElementById("registroDiv").style.display = "none";
+						document.getElementById("recuperacionDiv").style.display = "none";
+						document.getElementById("todo").style.display = "none";
+						document.getElementById("cambioDiv").style.display = "none";
+						document.getElementById("loginDiv").style.display = "block";
+
+
+						plantillaVista=0;
+						mensajeVista=0;
+						videoVista=0;
+						registroVista=0;
+						loginVista=1;
+						recuperarVista=0;
+						administrarVista=0;
+						cambioVista=0;
+						imagenInicialVista =0;
+						imagenLibreVista =0;
+
+					}
+
+
+
+
+
+				}
+
+			}
+			function verRecuperacion()
+			{
+
+				//se muestra la vista de recuperacion de contraseña
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("recuperacionDiv").style.display = "block";
+				document.getElementById("correoRecuperacion").value = "";
+
+				todoVista=0;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=1;
+				administrarVista=0;
+				cambioVista=0;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+				if(usuarioLogin==1)
+				{
+					todoVista=1;
+				}
+				else
+				{
+					todoVista=0;
+				}
+
+			}
+
+			function verCambio()
+			{
+				//se muestra la vista de cambiar la contraseña
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("cambioDiv").style.display = "block";
+				document.getElementById("contrasenaCambio").value = "";
+				document.getElementById("confirmacionCambio").value = "";
+
+
+				todoVista=0;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=1;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+				if(usuarioLogin==1)
+				{
+					todoVista=1;
+				}
+				else
+				{
+					todoVista=0;
+				}
+
+			}
+			function anonimo()
+			{
+
+				document.getElementsByClassName("BtnCerrar")[0].style.display = "none";
+				document.getElementsByClassName("BtnCerrar")[1].style.display = "none";
+				document.getElementsByClassName("BtnCerrar")[2].style.display = "none";
+				document.getElementsByClassName("BtnCerrar")[3].style.display = "none";
+				document.getElementsByClassName("BtnCerrar")[4].style.display = "none";
+				document.getElementsByClassName("BtnCerrar")[5].style.display = "none";
+				document.getElementsByClassName("BtnCerrar")[6].style.display = "none";
+				document.getElementById("plantillaDiv").style.display = "block";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+
+
+
+				todoVista=0;
+				plantillaVista=1;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+
+			}
+			function verPlantilla(men,can,vid)
+			{
+				//ver vista de plantilla
+				document.getElementById("cambioDiv").style.display = "none";
+				document.getElementById("todo").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("plantillaDiv").style.display = "block";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+
+				//document.getElementById("foo").src = document.getElementById("foo").src;
+				document.getElementById("grabacionFinal").src = document.getElementById("grabacionFinal").src;
+
+
+				todoVista=0;
+				plantillaVista=1;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+
+
+			}
+
+			function verImagenInicial(pla,men,can,vid)
+			{
+				//ver vista de plantilla
+				document.getElementById("cambioDiv").style.display = "none";
+				document.getElementById("todo").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "block";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+
+				//document.getElementById("foo").src = document.getElementById("foo").src;
+				document.getElementById("grabacionFinal").src = document.getElementById("grabacionFinal").src;
+				document.getElementById("imgInicial").scrollIntoView();
+
+
+				todoVista=0;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				cambioVista=0;
+				imagenInicialVista=1;
+				imagenLibreVista =0;
+
+
+			}
+
+			function verImagenLibre(pla,men,can,vid)
+			{
+				if('{{ marco }}' != "" && gId("imgMarco").style.backgroundImage== "" )
+				{
+					ajaxTraerMarco('{{ marco }}');
+				}
+				//ver vista de plantilla
+				document.getElementById("cambioDiv").style.display = "none";
+				document.getElementById("todo").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "block";
+
+
+
+				todoVista=0;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				cambioVista=0;
+				imagenInicialVista=0;
+				imagenLibreVista=1;
+				if('{{ pla }}' =="" && '{{ img }}' =="")
+				{
+					var x = document.getElementsByClassName("atrasLibre");
+					var i;
+					for (i = 0; i < x.length; i++) {
+						x[i].style.display = "none";
+					}
+				}
+				else
+				{
+					var x = document.getElementsByClassName("atrasLibre");
+					var i;
+					for (i = 0; i < x.length; i++) {
+						x[i].style.display = "block";
+					}
+				}
+
+				initImg();
+
+			}
+
+			var ua = navigator.userAgent
+			, t = true
+			, ie = /(msie|trident)/i.test(ua)
+			, chrome = /chrome/i.test(ua)
+			, phantom = /phantom/i.test(ua)
+			, safari = /safari/i.test(ua) && !chrome && !phantom
+			, iphone = /iphone/i.test(ua)
+			, ipad = /ipad/i.test(ua)
+			, touchpad = /touchpad/i.test(ua)
+			, android = /android/i.test(ua)
+			, opera = /opera/i.test(ua) || /opr/i.test(ua)
+			, firefox = /firefox/i.test(ua)
+			, gecko = /gecko\//i.test(ua)
+			, seamonkey = /seamonkey\//i.test(ua)
+			, webkitVersion = /version\/(\d+(\.\d+)?)/i
+			, firefoxVersion = /firefox\/(\d+(\.\d+)?)/i
+			, o
+
+			function detect()
+			{
+
+				if (ie) return {
+					msie: t
+					, version: ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)[2]
+				}
+				if (opera) return {
+					opera: t
+					, version: ua.match(webkitVersion) ? ua.match(webkitVersion)[1] : ua.match(/opr\/(\d+(\.\d+)?)/i)[1]
+				}
+				if (chrome) return {
+					webkit: t
+					, chrome: t
+					, version: ua.match(/chrome\/(\d+(\.\d+)?)/i)[1]
+				}
+				if (phantom) return {
+					webkit: t
+					, phantom: t
+					, version: ua.match(/phantomjs\/(\d+(\.\d+)+)/i)[1]
+				}
+				if (touchpad) return {
+					webkit: t
+					, touchpad: t
+					, version : ua.match(/touchpad\/(\d+(\.\d+)?)/i)[1]
+				}
+				if (iphone || ipad)
+				{
+					o =
+					{
+						webkit: t
+						, mobile: t
+						, ios: t
+						, iphone: iphone
+						, ipad: ipad
+						, version: (ua.match(/CPU iPhone OS ([0-9_]+) like Mac OS X/i)[1] || '1.1.1').replace('_', '.')
+					}
+					return o
+				}
+				if (android) return {
+					webkit: t
+					, android: t
+					, mobile: t
+					, version: (ua.match(/Linux; Android ([0-9.]+)/i) || ua.match(firefoxVersion))[1]
+				}
+				if (safari) return {
+					webkit: t
+					, safari: t
+					, version: ua.match(webkitVersion)[1]
+				}
+				if (gecko)
+				{
+					o =
+					{
+						gecko: t
+						, mozilla: t
+						, version: ua.match(firefoxVersion)[1]
+					}
+					if (firefox) o.firefox = t
+					return o
+				}
+				if (seamonkey) return {
+					seamonkey: t
+					, version: ua.match(/seamonkey\/(\d+(\.\d+)?)/i)[1]
+				}
+				return {}
+			}
+
+
+
+			function retornarSO(session,opciones)
+			{
+
+				 setInterval("ajustarMarco()", 500);
+
+				 var browser = detect();
+
+
+				//siempre que se recagar la pagin ingresa a esta funcion
+				 var nav = navigator.userAgent.toLowerCase();
+				 var navegador="";
+
+				 if(nav.indexOf("msie") != -1){
+					navegador="m";
+
+				} else if(nav.indexOf("firefox") != -1){
+
+					navegador="fm";
+				} else if(nav.indexOf("opera") != -1){
+					navegador="op";
+				} else if(nav.indexOf("chrome") != -1){
+					navegador="ch";
+				} else {
+					navegador="ot";
+				}
+				var raw = navigator.userAgent.match(/Chrome(|ium)\/([0-9]+)\./);
+
+
+
+
+				// se valid si la version del navegador es mayo o igual a 51 para de esta manera estar seguros que el aplictivo funciionara corecctamente
+				//if( || navegador=="ch" || navegador=="fm" )
+				if(navegador=="ch")
+				{
+					if(parseInt(raw[2], 10) >= 51)
+					{
+						init(session,opciones);
+					}
+					else
+					{
+						alert("El navegador Google Chrome esta desactualizado por favor actualizar a una version mas reciente.");
+						init(session,opciones);
+					}
+
+				}
+				else
+				{
+
+					alert("Recomendamos utilizar el navegador GOOGLE CHROME para hacer un buen provecho de la pagina.");
+					init(session,opciones);
+				}
+			}
+
+			function init(session,opciones)
+			{
+				//se encarga de validar que opciones tiene el codigo qr para grabar
+
+
+				if(extendidoSesion==1)
+				{
+
+					location.reload();
+
+				}
+
+				opcionesSesion =opciones;
+				loginSesion = session; //variable que almacena si la seson esta inciada
+
+
+				document.getElementById('player').src = '';
+				document.getElementById('playerFinal').src = '';
+
+				var OSName="Unknown OS";
+				if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
+				if (navigator.appVersion.indexOf("Mac")!=-1) OSName="MacOS";
+				if (navigator.appVersion.indexOf("X11")!=-1) OSName="UNIX";
+				if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
+
+
+				var pla="";
+				var vid="";
+				var can="";
+				var men="";
+				var img="";
+				var lib="";
+				if(opciones.length>0)
+				{
+					//almacena la opcion correspondiente si existe
+					document.getElementById("cambioDiv").style.display = "none";
+					document.getElementById("atrasLogin").style.display = "block";
+					for(i=0;i<opciones.length;i++)
+					{
+						if(opciones[i]=="P")
+						{
+							pla="P";
+						}
+						else if(opciones[i]=="V")
+						{
+							vid="V";
+						}
+						else if(opciones[i]=="C")
+						{
+							can="C";
+						}
+						else if(opciones[i]=="M")
+						{
+							men="M";
+						}
+						else if(opciones[i]=="I")
+						{
+							img="I";
+						}
+						else if(opciones[i]=="L")
+						{
+							lib="L";
+						}
+						else
+						{
+							pla="";
+							vid="";
+							can="";
+							men="";
+							img="";
+							lib="";
+						}
+					}
+				}
+				else
+				{
+					document.getElementById("atrasLogin").style.display = "none";
+					document.getElementById("grabarMensaje").style.display = "none";
+					sinOpciones=1;
+					//si no tiene opciones muestra la vista de logearse ppara ir a admistrar los codigos
+					login();
+				}
+				if(session==1)
+				{
+					ingresoUp = 1;
+					document.getElementsByClassName("BtnCerrar")[0].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[1].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[2].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[3].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[4].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[5].style.display = "block";
+					document.getElementsByClassName("BtnCerrar")[6].style.display = "block";
+				}
+				else
+				{
+
+					ingresoUp = 0;
+
+					document.getElementsByClassName("BtnCerrar")[0].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[1].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[2].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[3].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[4].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[5].style.display = "none";
+					document.getElementsByClassName("BtnCerrar")[6].style.display = "none";
+
+				}
+				if(fromSession==1)
+				{
+					document.getElementById("mensajeTodo").innerHTML = "";
+
+					verTodo();
+				}
+				else
+				{
+					//valida las opciones y muestra las vstas de acuerdo a las opciones que se tengan activas
+					if(img=="I")
+					{
+
+						verImagenInicial(pla,men,can,vid);
+					}
+					else
+					{
+						if(pla=="P")
+						{
+							verPlantilla(men,can,vid);
+						}
+						else if(lib=="L")
+						{
+							verImagenLibre();
+						}
+						else
+						{
+							if(men=="M" || can=="C")
+							{
+
+								var x = document.getElementsByClassName("atrasMensaje");
+								var i;
+								for (i = 0; i < x.length; i++) {
+									x[i].style.display = "none";
+								}
+								verMensaje(men,can,vid);
+							}
+							else
+							{
+								if(vid=="V")
+								{
+
+									var x = document.getElementsByClassName("atrasVideo");
+									var i;
+									for (i = 0; i < x.length; i++) {
+										x[i].style.display = "none";
+									}
+									verVideo();
+								}
+							}
+						}
+					}
+				}
+			}
+
+
+			function atrasLogin()
+			{
+
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("ingresoDiv").style.display = "block";
+
+
+			}
+			function atrasRegistro()
+			{
+
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "block";
+				document.getElementById("nombre").value = "";
+				document.getElementById("correoRegistro").value = "";
+				document.getElementById("contrasenaRegistro").value = "";
+				document.getElementById("confirmar").value = "";
+
+				todoVista=0;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=1;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+
+
+			}
+
+			function eliminarPlantilla()
+			{
+				document.getElementById("idPlantilla").value = "";
+				document.getElementById("iframe").src = "";
+				document.getElementById("iframe").style.display = "none";
+			}
+			function eliminarVideo()
+			{
+				document.getElementById("videoBlob").value = "";
+				document.getElementById("grabacionFinal").src ="";
+				document.getElementById("grabacion").src ="";
+				document.getElementById('videoArchivo').value= "";
+				document.getElementById("grabacionFinal").style.display ="none";
+				document.getElementById("grabacion").style.display ="none";
+				document.getElementById("modalRepro").style.display ="none";
+				videoBase64="";
+
+
+
+			}
+
+			function eliminarCancion()
+			{
+				document.getElementById("urlMusica").value = "";
+				document.getElementById("player").src="";
+
+				document.getElementById("player").style.visibility = "hidden";
+				youtube="";
+				consulta=0;
+				document.getElementById("playerFinal").src ="";
+				document.getElementById("playerFinal").style.display ="none";
+				document.getElementById("eliminarCancion").style.display = "none";
+
+
+
+			}
+
+
+			function verMensaje(men,can,vid)
+			{
+
+				//muestra la vista de mensaje
+				//document.getElementById("foo").src = document.getElementById("foo").src;
+				//document.getElementById("grabacionFinal").src = document.getElementById("grabacionFinal").src;
+
+				var iframe = document.getElementById('iframe');
+				iframe.src = iframe.src;
+
+				if(men=="" && can=="" && vid=="")
+				{
+					//si no tiene opcion a mensaje ni cancion ni video no enviar directamente a a la vista de ver todo
+					verTodo();
+				}
+				else
+				{
+					if(men=="" && can=="")
+					{
+
+						//si no tiene opcion de mensaje y cancion pero si tiene video lo envia a la vista de video
+						document.getElementById("mensajeDiv").style.display = "none";
+						verVideo(men,can,vid);
+					}
+					else
+					{
+						// si tiene los dos o alguno de los dos valida individualemente cual tienee para mostrar las opciones
+						if(men==""){
+							document.getElementById("escribirMensaje").style.display = "none";
+						}
+
+						if(can==""){
+
+							document.getElementById("cancionDiv").style.display = "none";
+						}
+						document.getElementById("administrarDiv").style.display = "none";
+						document.getElementById("plantillaDiv").style.display = "none";
+						document.getElementById("imagenInicialDiv").style.display = "none";
+						document.getElementById("imagenLibreDiv").style.display = "none";
+						document.getElementById("videoDiv").style.display = "none";
+						document.getElementById("todo").style.display = "none";
+						document.getElementById("loginDiv").style.display = "none";
+						document.getElementById("mensajeDiv").style.display = "block";
+
+
+
+						todoVista=0;
+						plantillaVista=0;
+						mensajeVista=1;
+						videoVista=0;
+						registroVista=0;
+						loginVista=0;
+						recuperarVista=0;
+						administrarVista=0;
+						cambioVista=0;
+						imagenInicialVista =0;
+						imagenLibreVista =0;
+
+
+					}
+
+				}
+			}
+			function plantillaSi()
+			{
+				//muestra la vista de plantilla
+				if('{{ pla }}' == "" && '{{ lib }}' == "")
+				{
+					verImagenInicial();
+				}
+				else
+				{
+					if('{{ lib }}' !="" && imagenLibreVista != 1)
+					{
+						verImagenLibre();
+					}
+					else
+					{
+						if('{{ pla }}' != "" )
+						{
+							var player = document.getElementById('player');
+							player.src = youtube;
+							var x = document.getElementsByClassName("atrasMensaje");
+							var i;
+							for (i = 0; i < x.length; i++) {
+								x[i].style.display = "block";
+							}
+							document.getElementById("mensajeDiv").style.display = "none";
+							document.getElementById("countdown").style.display = "none";
+							document.getElementById("plantillaDiv").style.display = "block";
+							document.getElementById("imagenInicialDiv").style.display = "none";
+							document.getElementById("imagenLibreDiv").style.display = "none";
+							document.getElementById("videoDiv").style.display = "none";
+							document.getElementById("todo").style.display = "none";
+							document.getElementById("administrarDiv").style.display = "none";
+							//document.getElementById("foo").src = document.getElementById("foo").src;
+							//document.getElementById("grabacionFinal").src = document.getElementById("grabacionFinal").src;
+
+
+							todoVista=0;
+							plantillaVista=1;
+							mensajeVista=0;
+							videoVista=0;
+							registroVista=0;
+							loginVista=0;
+							recuperarVista=0;
+							administrarVista=0;
+							cambioVista=0;
+							imagenInicialVista =0;
+							imagenLibreVista =0;
+						}
+						else
+						{
+							verImagenInicial();
+						}
+
+					}
+				}
+
+
+
+			}
+			function verVideo(from,men,can,vid)
+			{
+				//muestra la vista de video
+				//la variable from hace referencia  a la vista en donde indicaron la accion
+				//console.debug(tinyMCE.activeEditor.getContent());
+				//alert(tinyMCE.activeEditor.selection.getContent({format : 'text'}));
+
+				document.getElementById("detalle").value= tinyMCE.activeEditor.getContent({format : 'raw'});
+
+				//console.debug(tinyMCE.get('detalle').getContent());
+				var player = document.getElementById('player');
+				player.src = youtube;
+				var playerFinal = document.getElementById('playerFinal');
+				playerFinal.src = youtube;
+				//document.getElementById("foo").src = document.getElementById("foo").src;
+				//document.getElementById("grabacionFinal").src = document.getElementById("grabacionFinal").src;
+
+				//valida las opciones que tiene para seguir con la ruta a la que tiene acceso
+				if(men=="" && can=="" && vid=="" && from =="todo")
+				{
+					plantillaSi();
+				}
+				else
+				{
+					if(vid=="" && from =="mensaje")
+					{
+						verTodo();
+					}
+					else if(vid=="" && from =="todo")
+					{
+						verMensaje();
+					}
+					else
+					{
+
+						document.getElementById("todo").style.display = "none";
+						document.getElementById("plantillaDiv").style.display = "none";
+						document.getElementById("imagenInicialDiv").style.display = "none";
+						document.getElementById("imagenLibreDiv").style.display = "none";
+						document.getElementById("mensajeDiv").style.display = "none";
+						document.getElementById("videoDiv").style.display = "block";
+						document.getElementById("administrarDiv").style.display = "none";
+						document.getElementById("mensajeFinal").innerHTML = document.getElementById("detalle").value;
+
+
+						todoVista=0;
+						plantillaVista=0;
+						mensajeVista=0;
+						videoVista=1;
+						registroVista=0;
+						loginVista=0;
+						recuperarVista=0;
+						administrarVista=0;
+						cambioVista=0;
+						imagenInicialVista =0;
+						imagenLibreVista =0;
+
+					}
+				}
+			}
+			function  backVideo(men,can,vid)
+			{
+
+
+				if(men=="" && can=="")
+				{
+
+
+					document.getElementById("mensajeDiv").style.display = "none";
+
+					plantillaSi(men,can,vid);
+				}
+				else
+				{
+					document.getElementById("plantillaDiv").style.display = "none";
+					document.getElementById("imagenInicialDiv").style.display = "none";
+					document.getElementById("imagenLibreDiv").style.display = "none";
+					document.getElementById("videoDiv").style.display = "none";
+					document.getElementById("administrarDiv").style.display = "none";
+					document.getElementById("mensajeDiv").style.display = "block";
+
+
+					todoVista=0;
+					plantillaVista=0;
+					mensajeVista=1;
+					videoVista=0;
+					registroVista=0;
+					loginVista=0;
+					recuperarVista=0;
+					administrarVista=0;
+					cambioVista=0;
+					imagenInicialVista =0;
+					imagenLibreVista =0;
+
+
+				}
+
+			}
+
+			var handleFileSelect = function(evt) {
+				var files = evt.target.files;
+				var file = files[0];
+
+				if (files && file) {
+					var reader = new FileReader();
+
+					reader.onload = function(readerEvt) {
+
+						videoBase64 = readerEvt.target.result;
+						if(videoBase64.length>9437184)
+						{
+							alert("Video muy extenso, Vuelve a intentarlo. Tiempo maximo 60 segundos")
+							document.getElementById('videoArchivo').value= "";
+						}
+						else
+						{
+
+							document.getElementById('grabacion').src= videoBase64;
+							document.getElementById('grabacionFinal').src= videoBase64;
+							document.getElementById("grabacion").scrollIntoView();
+							document.getElementById("grabacionFinal").style.display ="block";
+							document.getElementById("modalRepro").style.display ="block";
+							document.getElementById("grabacion").style.display ="block";
+						}
+
+
+
+					};
+
+					reader.readAsDataURL(file);
+
+
+
+
+				}
+			};
+
+
+			if (window.File && window.FileReader && window.FileList && window.Blob) {
+				document.getElementById('videoArchivo').addEventListener('change', handleFileSelect, false);
+			}  else {
+				alert('The File APIs are not fully supported in this browser.');
+			}
+			function verTodo()
+			{
+
+				//muestra la vista de todo lo guardado
+
+
+
+
+				todoVista=1;
+				//document.getElementById("foo").src = document.getElementById("foo").src;
+				//document.getElementById("grabacionFinal").src = document.getElementById("grabacionFinal").src;
+				//consulta hace referencia al estado de la busqueda de la cancion, si han buscado o no
+
+
+				var codigo =  {{ qr_id }};
+				//document.getElementById("videoBlob").value = "http://it-sbox.com:7016/pool/"+codigo+".mp4";
+				if(consulta==0){
+
+					document.getElementById('player').src = "";
+					document.getElementById('playerFinal').src = "";
+					document.getElementById("urlMusica").value = "";
+					document.getElementById('playerFinal').style.display = "none";
+				}
+				else
+				{
+					document.getElementById("urlMusica").value = youtube;
+					document.getElementById("playerFinal").src = youtube;
+					document.getElementById("player").src = youtube;
+					document.getElementById('playerFinal').style.display = "block";
+				}
+				document.getElementById("plantillaDiv").style.display = "none";
+				document.getElementById("imagenInicialDiv").style.display = "none";
+				document.getElementById("imagenLibreDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("administrarDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("detalleForm").value = document.getElementById("detalle").value ;
+
+
+				if(document.getElementById("idPlantilla").value !="")
+				{
+					document.getElementById("imagenFinal").style.display = "block";
+				}else
+				{
+					document.getElementById("imagenFinal").style.display = "none";
+				}
+
+
+
+
+				document.getElementById("mensajeFinal").innerHTML = document.getElementById("detalle").value;
+				document.getElementById("todo").style.display = "block";
+				document.getElementById("guardarMul").style.display = "block";
+
+				if(document.getElementById("container").style.display !="none" && document.getElementById("container").style.display !="")
+				{
+
+					pintarImagenFinal();
+
+
+				}
+				else
+				{
+					gId("containerFinal").style.display="none";
+
+				}
+
+
+				todoVista=1;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=0;
+				imagenInicialVista =0;
+				imagenLibreVista =0;
+
+
+			}
+
+
+
+			var seconds;
+			var temp;
+			var timer;
+			function countdown()
+			{
+				//funcion que controlar el contador de tiempo de duracion del video
+				seconds = document.getElementById('countdown').innerHTML;
+				seconds = parseInt(seconds, 10);
+
+				if (seconds == 0)
+				{
+					temp = document.getElementById('countdown');
+					document.getElementById('bdetener').click();
+					return;
+				}
+
+				seconds--;
+				temp = document.getElementById('countdown');
+				temp.innerHTML = seconds;
+				timeoutMyOswego = setTimeout(countdown, 1000);
+			}
+
+			function stopClock()
+			{
+				clearTimeout(timeoutMyOswego);
+			}
+
+			//codigo para traer la lista de categorias y plantillas
+			function traerLista(cat)
+			{
+
+				categoria = cat;
+				conectar(cat);
+
+
+			}
+			//ajax de la lista de plantilla
+			function conectar(cat)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuesta;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/traerLista/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("categoria="+cat);
+			}
+
+			//respuesta de ajax de plantillas
+			function respuesta()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						categorias="";
+						categorias = conexion.responseText;
+
+						categorias = JSON.parse(categorias);
+
+						var hijos = document.getElementById("lis_cat").childNodes;
+						for(i=0; i< hijos.length; i++)
+						{
+
+							if(hijos[i].tagName == "LI")
+							{
+								var lulu = hijos[i].getElementsByTagName("ul");
+
+
+								lulu[0].style.display="none";
+								lulu[0].innerHTML="";
+							}
+
+						}
+
+
+						//pintas las pplantillas en su categorias correspondiente
+						for(c=0; c < categorias.plantilla.length; c++)
+						{
+
+
+
+
+							url=categorias.plantilla[c].url;
+							id = categorias.plantilla[c].id;
+							var tmp ="<li onclick= 'traerIframe(\""+url+"\",\""+id+"\",this)'>"+categorias.plantilla[c].nombre;+"</li>";
+							document.getElementById("imagenPla_"+categoria).innerHTML+= tmp;
+							show("imagenPla_"+categoria);
+
+
+
+						}
+						document.getElementById("imagenPla_"+categoria).style.display="inline";
+
+
+					}
+				}
+			}
+			var csrfcookie = function()
+			{
+				//funcion que opcione el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+
+			function traerIframe(url,id,ele)
+			{
+
+				//pinta la plantilla seleccionada
+				var hijos = document.getElementById("lis_cat").childNodes;
+				for(i=0; i< hijos.length; i++)
+				{
+
+					if(hijos[i].tagName == "LI")
+					{
+						var lulu = hijos[i].getElementsByTagName("ul");
+
+						var ops = lulu[0].getElementsByTagName("li");
+						for(j=0; j<ops.length; j++)
+						{
+							ops[j].style.background="";
+						}
+					}
+
+				}
+				document.getElementById("mensajePlantilla").innerHTML = "";
+				document.getElementById("mensajePlantilla").innerHTML = "<img src='/static/main/{{ tema }}/images/loading.gif' id='loading'/>";
+
+
+				ele.style.background ="#58ACFA";
+				idPlantilla= id;
+				document.getElementById("iframe").style.display = "block";
+				document.getElementById("iframe").src = "";
+
+				document.getElementById("iframe").src = url;
+				document.getElementById("imagenFinal").src = url;
+				document.getElementById("idPlantilla").value = id;
+				document.getElementById("iframe").scrollIntoView();
+
+			}
+
+			function finCargarImagen()
+			{
+				document.getElementById("mensajePlantilla").innerHTML = "";
+			}
+
+
+			function getCookie(c_name)
+			{
+				if (document.cookie.length > 0)
+				{
+					c_start = document.cookie.indexOf(c_name + "=");
+					if (c_start != -1)
+					{
+						c_start = c_start + c_name.length + 1;
+						c_end = document.cookie.indexOf(";", c_start);
+						if (c_end == -1) c_end = document.cookie.length;
+						return unescape(document.cookie.substring(c_start,c_end));
+					}
+				}
+				return "";
+			}
+
+			var modal = document.getElementById('modal');
+
+			// Get the button that opens the modal
+		//	var btn = document.getElementById("nueCat");
+
+			// Get the <span> element that closes the modal
+			var span = document.getElementsByClassName("close")[0];
+
+			// When the user clicks on the button, open the modal
+			function abrirModal()
+			{
+				modal.style.display = "block";
+			}
+
+			// When the user clicks on <span> (x), close the modal
+			function cerrarModal1()
+			{
+				modal.style.display = "none";
+			}
+
+			// When the user clicks anywhere outside of the modal, close it
+			window.onclick = function(event)
+			{
+				if (event.target == modal)
+				{
+					modal.style.display = "none";
+				}
+			}
+
+
+
+
+		</script>
+
+
+	</body>
+
+</html>

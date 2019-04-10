@@ -1,0 +1,59 @@
+
+{% extends 'main/base.html' %}
+
+{% block body %}
+	<a href="{% url 'main:index' %}">-</a>
+	<a id="titulo">REPORTE DE CODIGOS QR</a>
+	<center>
+
+	<!--Tabla del reporte-->
+	<div id="tabs">
+		<table id="tabla" class="table table-hover">
+			<thead>
+				<tr>
+					<!--Titulos-->
+					<th id="ti">FECHA DE CREACION</th>
+					<th id="ti">LOTE</th>
+					<th id="ti">CREADOS SIN USAR</th>
+					<th id="ti">COMPRADOS Y CARGADOS</th>
+					<th id="ti">VISTOS</th>
+					<th id="ti">EXPIRADOS</th>
+					<th id="ti">USADOS PARA EXTENDER</th>
+					<th id="ti">ELIMINADOS</th>
+					<th id="ti">TOTAL</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for i in codeArray %}
+				<!--Ciclo de registros-->
+				<tr>
+					<td>{{ i.0 }}</td>
+					<td>{{ i.1 }}</td>
+					<td>{{ i.2 }}</td>
+					<td>{{ i.3 }}</td>
+					<td>{{ i.4 }}</td>
+					<td>{{ i.5 }}</td>
+					<td>{{ i.6 }}</td>
+					<td>{{ i.7 }}</td>
+					<td>{{ i.8 }}</td>
+				</tr>
+
+			{% endfor %}
+				<tr>
+					<!--Totales-->
+					<th id="tit"colspan="2">Totales</th>
+					<th id="tit">{{ totalesArray.0.0 }}</th>
+					<th id="tit">{{ totalesArray.0.1 }}</th>
+					<th id="tit">{{ totalesArray.0.2 }}</th>
+					<th id="tit">{{ totalesArray.0.3 }}</th>
+					<th id="tit">{{ totalesArray.0.4 }}</th>
+					<th id="tit">{{ totalesArray.0.5 }}</th>
+					<th id="tit">{{ totalesArray.0.6 }}</th>
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	</center>
+
+{% endblock %}

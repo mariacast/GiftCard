@@ -1,0 +1,389 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+	<!-- tabla de los codigos petenecientes al lote-->
+
+	<button id="devo" type="button" class="b_nuevo">Devolver</button>
+	<a id="mensajeVista"></a>
+	<table id="tabla" class="table table-hover">
+		<thead>
+			<tr>
+				<th colspan="4" >CODIGOS QR DEL LOTE {{ lote }} </th>
+			</tr>
+		</thead>
+		<thead>
+			<tr>
+				<th id="ti">CODIGO QR</td>
+				<th id="ti">FECHA MODIFICACION</td>
+				<th id="ti">ESTADO</td>
+				<th id="ti"><input type="checkbox" name="todos" id="todos" onclick="selectAll()" value="">SELECCIONAR TODOS</td>
+			</tr>
+		</thead>
+		<tbody>
+		{% for codigo in codigos %}
+			<!--ciclo de pinta los codigos qr -->
+
+			<tr>
+				<!-- validaciones para convertir el numero de estado en su descripcion-->
+				<td>{{ codigo.id }}</td>
+				{% if codigo.fecha_modificacion == None %}
+					<td>Sin Modificar</td>
+				{% endif %}
+
+				{% if codigo.fecha_modificacion != None %}
+					<td>{{ codigo.fecha_modificacion }}</td>
+				{% endif %}
+
+				{% if codigo.estado == "0" %}
+					<td>Creado, sin usar</td>
+					<td><input type="checkbox" name="devolver"  value="{{ codigo.id }}"></td>
+				{% endif %}
+
+				{% if codigo.estado == "1" %}
+					<td>Comprado y Cargado</td>
+					<td></td>
+				{% endif %}
+
+				{% if codigo.estado == "2" %}
+					<td>Visto</td>
+					<td></td>
+				{% endif %}
+				{% if codigo.estado == "3" %}
+					<td>Expirado</td>
+					<td></td>
+				{% endif %}
+				{% if codigo.estado == "4" %}
+					<td>Usado para Extender</td>
+					<td></td>
+				{% endif %}
+				{% if codigo.estado == "5" %}
+					<td>Elimado</td>
+					<td></td>
+				{% endif %}
+			</tr>
+
+		{% endfor %}
+			</tbody>
+		</table><br>
+
+		<div id="bts">
+			<a href="{% url 'main:descargarVendedor' lote %}"><button type="button" class="b_descarga">Descargar</button></a>
+			<a href="{% url 'main:listCodigosVendedor' lote %}"><button type="button" class="b_lista">Lista De Codigos</button></a>
+		</div>
+
+    <div id="modal" class="modal">
+		<div class="modal-content">
+			<span class="close">x</span>
+			<div id="mensajeCodigo">	</div>
+			<br>
+			<br>
+			<br>
+			<!-- Formulario ingresar vendedor-->
+			<form id="formulario" action="{% url 'main:almacenarCodigoVendedor' %}" onKeypress="if(event.keyCode == 13) event.returnValue = false;" method="post">{% csrf_token %}
+
+
+				<input type="hidden" name="id" id="id" value="0"><br>
+				<input type="hidden" name="bandera" id="bandera" value="0"><br>
+
+				<div id="devoDiv">
+
+					Vendedor:
+
+					<select name="vendedor2" id="vendedor2" onchange="traerLotes()">
+						<option value="" selected>Seleccione... </option>
+
+						<option value="{{ vendedor.id }}" selected>{{ vendedor.nombre }}</option>
+
+					</select>
+					<br>
+					<br>
+					Lote:
+					<select name="lote2" id="lote2" onchange="traerCodigos()">
+						<option value="" selected>Seleccione... </option>
+						<option value="{{ lote }}" selected>{{ lote }}</option>
+
+					</select>
+					<br>
+					<br>
+					Codigo Inicio:
+					<select name="codini" id="codini" onchange="validarCode()">
+						<option value="" selected>Seleccione... </option>
+						{% for i in codigos %}
+							{% if i.estado == "0" %}
+								<option value="{{ i.id }}">{{ i.id }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+					<br>
+					<br>
+					Codigo Fin:
+					<select name="codfin" id="codfin" onchange="validarCode()">
+						<option value="" selected>Seleccione... </option>
+						{% for i in codigos %}
+							{% if i.estado == "0" %}
+								<option value="{{ i.id }}">{{ i.id }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</div>
+				<br>
+
+				<img src="/static/main/{{ tema }}/images/GUARDA.png"  width="38%" height="27%" type="button" onclick="validar()" value="Guardar" style=cursor:pointer;>
+			</form>
+			<!-- Fin Formulario ingresar vendedor-->
+
+		</div>
+		<!-- mensaje de estado de guardado-->
+
+
+
+	</div>
+
+	<div id="pie">
+		<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+	</div>
+
+	<script type="text/javascript">
+
+		var codigos= []
+		var span = document.getElementsByClassName("close")[0];
+		var btn2 = document.getElementById("devo");
+
+
+		function selectAll()
+		{
+			if(document.getElementById("todos").checked== true)
+			{
+				var inputs = document.getElementsByTagName("input");
+				for(var i = 0; i < inputs.length; i++)
+				{
+					if(inputs[i].type == "checkbox")
+					{
+						inputs[i].checked = true;
+					}
+				}
+			}
+			else
+			{
+				var inputs = document.getElementsByTagName("input");
+				for(var i = 0; i < inputs.length; i++)
+				{
+					if(inputs[i].type == "checkbox")
+					{
+						inputs[i].checked = false;
+					}
+				}
+			}
+
+		}
+
+
+		btn2.onclick = function()
+		{
+			devolverSelect();
+		}
+
+
+		function devolverSelect()
+		{
+			var inputs = document.getElementsByTagName("input");
+			for(var i = 0; i < inputs.length; i++)
+			{
+				if(inputs[i].type == "checkbox" )
+				{
+					if(inputs[i].checked == true && inputs[i].value != "")
+					{
+						codigos.push(inputs[i].value);
+					}
+				}
+			}
+			if(codigos.length == 0)
+			{
+				document.getElementById("mensajeVista").innerHTML="Debe seleccionar al menos un codigo";
+				setTimeout(function(){document.getElementById("mensajeVista").innerHTML="";},4000);
+			}
+			else
+			{
+				var c = confirm("¿Esta seguro que desea devolver los codigos seleccionados?")
+				if(c == true)
+				{
+					ajaxDevolver();
+				}
+			}
+
+
+		}
+		// Get the <span> element that closes the modal
+
+
+		/*
+		btn2.onclick = function()
+		{
+			modal.style.display = "block";
+
+
+			document.getElementById("mensajeCodigo").innerHTML="";
+			document.getElementById("devoDiv").style.display = "block";
+
+			document.getElementById("bandera").value = "d";
+		}
+
+		*/
+		// When the user clicks on <span> (x), close the modal
+
+
+
+
+		function ajaxDevolver()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaDevolver;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/devolucion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"codigos": codigos});
+			  conexion.send(data);
+
+
+			}
+
+
+			function respuestaDevolver()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+
+
+						if(respuest == 0)
+						{
+							document.getElementById("mensajeCodigo").innerHTML="";
+							document.getElementById("mensajeCodigo").innerHTML="El lote no tiene los codigos suficiente para esta cantidad";
+						}
+						if(respuest == 1)
+						{
+							location.reload()
+						}
+						else
+						{
+							document.getElementById("mensajeCodigo").innerHTML="";
+
+
+						}
+
+
+
+
+
+
+					}
+				}
+			}
+
+		function eliminar(regis_id)
+		{
+			confir = confirm("¿Realmente desea eliminar el registro?");
+			if(confir== true)
+			{
+				ajaxEliminar(regis_id);
+
+			}
+		}
+		function ajaxEliminar(regis_id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEliminar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/eliminarCodigoVendedor/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("regis_id="+regis_id);
+
+			}
+
+
+			function respuestaEliminar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+
+						if(respuest)
+						{
+
+
+							location.reload();
+
+
+
+						}
+
+
+					}
+				}
+			}
+
+			var csrfcookie = function()
+			{
+				//funcion que opcione el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+
+	</script>
+
+{% endblock %}

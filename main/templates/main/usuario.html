@@ -1,0 +1,337 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+<a href="{% url 'main:index' %}">.</a>
+	<button id="nueCat" type="button" class="b_nuevo">Enviar Correo</button>
+	<!-- Pinta la lista de vendedors guardadas-->
+	<a id="titulo">ADMINISTRAR USUARIOS - CLIENTES</a>
+
+	<br>
+	<center>
+		<table id="lista" class="table table-hover">
+			<thead>
+				<tr>
+					<th>Nombre</th>
+					<th>Correo</th>
+					<th><input type="checkbox" name="todos" id="todos" value="" onclick="selectAll();" style=cursor:pointer;>Seleccionar Todos</th>
+				</tr>
+			</thead>
+			<tbody>
+		{% for i in usuarios %}
+			<tr>
+				<td>{{ i.nombre }}</td>
+				<td>{{ i.correo }}</td>
+
+				<td><input type="checkbox" name="correos"  value="{{ i.correo }}" style=cursor:pointer;></td>
+
+
+			</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	</center>
+	<!-- Fin lista-->
+
+	<div id="modal" class="modal">
+
+	  <!-- Modal content -->
+		<div class="modal-content">
+			<span class="close">x</span>
+			<div id="mensajeCodigo">	</div>
+			<br>
+			<br>
+			<br>
+			<!-- Formulario ingresar vendedor-->
+			<form id="formulario" action="{% url 'main:almacenarCodigoVendedor' %}" onKeypress="if(event.keyCode == 13) event.returnValue = false;" method="post">{% csrf_token %}
+				<a>Enviar Correo</a>
+				<input type="hidden" name="id" id="id" value="0"><br>
+				<input type="hidden" name="bandera" id="bandera" value="0"><br>
+
+					<a>Asunto:</a>
+					<input type="text" name="asunto" id="asunto"><br><br>
+
+					<a>Mensaje:</a>
+					<textarea rows="8"  id="mensaje"></textarea>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br><br>
+					<a>Archivo:</a>
+					<input type="file" name="archivo" id="archivo"><br><br><br>
+
+				<button id="nue" type="button" class="b_nuevo" onclick="validar()" value="Guardar">Enviar</button>
+
+			</form>
+			<!-- Fin Formulario ingresar vendedor-->
+
+		</div>
+		<!-- mensaje de estado de guardado-->
+
+
+
+	</div>
+
+
+	<!-- The Modal -->
+
+
+	<script type="text/javascript">
+		var expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		var correos = []
+		var archivoB64;
+		function selectAll()
+		{
+			if(document.getElementById("todos").checked== true)
+			{
+				var inputs = document.getElementsByTagName("input");
+				for(var i = 0; i < inputs.length; i++)
+				{
+					if(inputs[i].type == "checkbox")
+					{
+						inputs[i].checked = true;
+					}
+				}
+			}
+			else
+			{
+				var inputs = document.getElementsByTagName("input");
+				for(var i = 0; i < inputs.length; i++)
+				{
+					if(inputs[i].type == "checkbox")
+					{
+						inputs[i].checked = false;
+					}
+				}
+			}
+
+		}
+
+		function validar()
+		{
+			//validacion formulario vendedor
+
+
+			var inputs = document.getElementsByTagName("input");
+			for(var i = 0; i < inputs.length; i++)
+			{
+				if(inputs[i].type == "checkbox" )
+				{
+					if(inputs[i].checked == true && inputs[i].value != "")
+					{
+						correos.push(inputs[i].value);
+					}
+				}
+			}
+
+			if(document.getElementById("bandera").value == "n" )
+			{
+
+				if(document.getElementById("asunto").value == "" )
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML=" El campo asunto no puede ser vacio";
+
+				}
+				else if(document.getElementById("mensaje").value == "" )
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML=" El campo mensaje no puede ser vacio";
+
+				}
+				else if(correos.length <=0)
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML="Debe seleccionar por lo menos un usuario";
+
+				}
+
+
+				else
+				{
+
+					document.getElementById("benviar").onclick = false;
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML="Cargando...";
+					guardar();
+				}
+			}
+
+
+		}
+
+		function guardar()
+		{
+			var bandera = document.getElementById("bandera").value;
+			if(bandera =="n")
+			{
+
+				var input = document.getElementById('archivo');
+				if(input.files.length > 0)
+				{
+					var archivo = input.files[0];
+
+					var extension = (archivo.name).split('.').pop();
+
+
+					var fileReader = new FileReader();
+					fileReader.onload = function (event) {
+
+						ajaxGuardar( event.target.result,extension);
+
+					};
+					fileReader.readAsDataURL(archivo);
+				}
+				else
+				{
+					ajaxGuardar("0","0");
+				}
+
+			}
+
+		}
+
+
+		function ajaxGuardar(archivo, exten)
+		{
+		  // Obtener la instancia del objeto XMLHttpRequest
+		  var asunto = document.getElementById("asunto").value;
+		  var mensaje = document.getElementById("mensaje").value;
+		  var file = document.getElementById("mensaje").value;
+
+
+
+
+		  if(window.XMLHttpRequest)
+		  {
+			conexion = new XMLHttpRequest();
+		  }
+		  else if(window.ActiveXObject)
+		  {
+			conexion = new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+
+		  //var comentarios=encodeURIComponent(vendedor);
+
+		  // Preparar la funcion de respuesta
+		  conexion.onreadystatechange = respuestaGuardar;
+
+		  // Realizar peticion HTTP
+		  conexion.open('POST', '/main/enviarCorreoUsuario/');
+		  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+		  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+
+
+		  var data = JSON.stringify({"asunto":asunto,"mensaje": mensaje,"correos": correos,"archivo": archivo,"extension": exten});
+		  conexion.send(data);
+
+
+		}
+
+
+		function respuestaGuardar()
+		{
+			if(conexion.readyState == 4)
+			{
+				if(conexion.status == 200)
+				{
+
+					respuest = conexion.responseText;
+
+
+
+					if(respuest == 2)
+					{
+						document.getElementById("benviar").onclick = true;
+						document.getElementById("mensajeCodigo").innerHTML="";
+						document.getElementById("mensajeCodigo").innerHTML="Error al enviar correo. Vuelve a intentarlo";
+					}
+					else if(respuest == 1)
+					{
+						location.reload()
+					}
+					else
+					{
+						document.getElementById("benviar").onclick = true;
+						document.getElementById("mensajeCodigo").innerHTML="";
+
+
+					}
+
+				}
+			}
+		}
+
+
+		var csrfcookie = function()
+		{
+			//funcion que opcione el token de django
+			var cookieValue = null,
+				name = 'csrftoken';
+			if (document.cookie && document.cookie !== '')
+			{
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++)
+				{
+					var cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) == (name + '='))
+					{
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		};
+
+	</script>
+
+
+	<script type="text/javascript">
+	// Get the modal
+		var modal = document.getElementById('modal');
+
+		// Get the button that opens the modal
+		var btn = document.getElementById("nueCat");
+
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("close")[0];
+
+		// When the user clicks on the button, open the modal
+		btn.onclick = function()
+		{
+			modal.style.display = "block";
+
+			document.getElementById("mensajeCodigo").innerHTML="";
+
+			document.getElementById("bandera").value = "n";
+		}
+
+
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function()
+		{
+			modal.style.display = "none";
+
+
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event)
+		{
+			if (event.target == modal)
+			{
+				modal.style.display = "none";
+			}
+		}
+
+	</script>
+
+
+
+
+{% endblock %}

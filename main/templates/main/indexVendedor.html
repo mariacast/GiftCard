@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+<!-- Toma el codigo base de del template base.html -->
+{% block body %}
+
+	{% if lista_codigos %}
+		<!-- tabla de la lista de lotes que se han generado-->
+		<a class="titulo_admin">PANEL DE CONTROL</a>
+
+			<table id="lista" class="table table-hover">
+				<thead>
+					<tr>
+						<th>FECHA DE CREACION</th>
+						<th>LOTE</th>
+						<th colspan="2" >CODIGOS</th>
+					</tr>
+				</thead>
+			<tbody>
+			{% for codigo in lista_codigos %}
+				<!-- ciclo que pinta los lotes-->
+				<tr>
+					<td>{{ codigo.fecha_creacion }}</td>
+					<td>{{ codigo.lote }}</td>
+					<td><a href="{% url 'main:codigosVendedor' codigo.lote %}"><button type="button" class="b_ver">Ver</button></a><td>
+				</tr>
+
+			{% endfor %}
+		</tbody>
+		</table>
+
+	{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+<button id="nueCat" type="button" class="b_nuevo">Nuevo</button>
+<!--	<img src="/static/main/images/masiva.png" id="devo" width="8%" height="7%"/> -->
+
+<a id="titulo">ADMINISTRAR CODIGOS DE VENDEDORES</a>
+
+<br><br><br>
+<!-- Pinta la tabla y subtablas con la infomacion estadistica de cada lote-->
+<center>
+
+	{% for lote in lotcod %}
+		<table id="lista" class="table table-hover">
+			<thead>
+				<tr>
+					<th colspan="2"> LOTE {{ lote.0 }}</th>
+				</tr>
+				<tr>
+					<th>VENDEDOR</th>
+					<th>CANTIDAD</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for vendor in lote.1 %}
+				<tr>
+					<td id="vend">  {{ vendor.0 }}</td>
+					<td id="vend">  {{ vendor.1 }}</td>
+				</tr>
+			{% endfor %}
+			<thead>
+				<tr>
+					<th> Total</td>
+					<th>  {{ lote.2 }}</td>
+				</tr>
+			</thead>
+		</table>
+	{% endfor %}
+
+</center>
+<!-- Fin lista-->
+
+	<div id="modal" class="modal">
+
+	  <!-- Modal content -->
+		<div class="modal-content">
+			<span class="close">x</span>
+			<div id="mensajeCodigo">	</div>
+			<br>
+			<br>
+			<br>
+			<!-- Formulario ingresar vendedor-->
+			<form id="formulario" action="{% url 'main:almacenarCodigoVendedor' %}" onKeypress="if(event.keyCode == 13) event.returnValue = false;" method="post">{% csrf_token %}
+
+
+				<input type="hidden" name="id" id="id" value="0"><br>
+				<input type="hidden" name="bandera" id="bandera" value="0"><br>
+				<div id="nuevoDiv">
+					<a>Vendedor:</a>
+					<select name="vendedor" id="vendedor">
+						<option value="" selected>Seleccione... </option>
+						{% for i in vendedores2 %}
+							{% if i.id != 1 %}
+							<option value="{{ i.id }}">{{ i.nombre }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+					<br>
+					<br>
+					<a>Lote:</a>
+					<select name="lote" id="lote">
+						<option value="" selected>Seleccione... </option>
+						{% for i in lotes %}
+							<option value="{{ i.lote }}">{{ i.lote }}</option>
+						{% endfor %}
+					</select>
+
+					<br>
+					<br>
+					<a>Cantidad:</a> <input type="number" name="cantidad" id="cantidad"><br><br>
+				</div>
+
+				<br>
+				<button type="button" class="b_guarda" onclick="validar()" value="Guardar" >Guardar</button>
+			
+			</form>
+			<!-- Fin Formulario ingresar vendedor-->
+
+		</div>
+		<!-- mensaje de estado de guardado-->
+
+
+
+	</div>
+
+
+	<!-- The Modal -->
+
+
+	<script type="text/javascript">
+		var expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+
+		function validar()
+		{
+			//validacion formulario vendedor
+
+			if(document.getElementById("bandera").value == "n" )
+			{
+
+				if(document.getElementById("vendedor").value == "" )
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML=" El campo vendedor no puede ser vacio";
+
+				}
+				else if(document.getElementById("lote").value == "" )
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML=" El campo lote no puede ser vacio";
+
+				}
+				else if(document.getElementById("cantidad").value == "" )
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML=" El campo cantidad no puede ser vacio";
+
+				}
+				else if(document.getElementById("cantidad").value <= 0 )
+				{
+					document.getElementById("mensajeCodigo").innerHTML="";
+					document.getElementById("mensajeCodigo").innerHTML=" El campo cantidad no puede ser menor a 1";
+
+				}
+				else
+				{
+					guardar();
+				}
+			}
+
+		}
+
+		function guardar()
+		{
+			var bandera = document.getElementById("bandera").value;
+			if(bandera =="n")
+			{
+				ajaxGuardar();
+			}
+
+		}
+
+
+		function ajaxGuardar()
+		{
+		  // Obtener la instancia del objeto XMLHttpRequest
+		  vendedor = document.getElementById("vendedor").value;
+		  lote = document.getElementById("lote").value;
+		  cantidad = document.getElementById("cantidad").value;
+
+
+		  if(window.XMLHttpRequest)
+		  {
+			conexion = new XMLHttpRequest();
+		  }
+		  else if(window.ActiveXObject)
+		  {
+			conexion = new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+
+		  //var comentarios=encodeURIComponent(vendedor);
+
+		  // Preparar la funcion de respuesta
+		  conexion.onreadystatechange = respuestaGuardar;
+
+		  // Realizar peticion HTTP
+		  conexion.open('POST', '/main/almacenarCodigoVendedor/');
+		  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+		  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+		  conexion.send("vendedor="+vendedor+"&lote="+lote+"&cantidad="+cantidad);
+
+		}
+
+
+		function respuestaGuardar()
+		{
+			if(conexion.readyState == 4)
+			{
+				if(conexion.status == 200)
+				{
+
+					respuest = conexion.responseText;
+
+
+
+					if(respuest == 0)
+					{
+
+						document.getElementById("mensajeCodigo").innerHTML="";
+						document.getElementById("mensajeCodigo").innerHTML="El lote no tiene los codigos suficiente para esta cantidad";
+					}
+					else if(respuest == 1)
+					{
+						location.reload()
+					}
+					else
+					{
+						document.getElementById("mensajeCodigo").innerHTML="";
+
+
+					}
+
+				}
+			}
+		}
+
+
+
+		var csrfcookie = function()
+		{
+			//funcion que opcione el token de django
+			var cookieValue = null,
+				name = 'csrftoken';
+			if (document.cookie && document.cookie !== '')
+			{
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++)
+				{
+					var cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) == (name + '='))
+					{
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		};
+
+	</script>
+
+
+	<script type="text/javascript">
+	// Get the modal
+		var modal = document.getElementById('modal');
+
+		// Get the button that opens the modal
+		var btn = document.getElementById("nueCat");
+		//var btn2 = document.getElementById("devo");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("close")[0];
+
+		// When the user clicks on the button, open the modal
+		btn.onclick = function()
+		{
+			modal.style.display = "block";
+			document.getElementById("vendedor").value = "";
+			document.getElementById("lote").value = "";
+			document.getElementById("cantidad").value = "";
+			document.getElementById("mensajeCodigo").innerHTML="";
+
+			document.getElementById("nuevoDiv").style.display = "block";
+
+			document.getElementById("bandera").value = "n";
+		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function()
+		{
+			modal.style.display = "none";
+
+
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event)
+		{
+			if (event.target == modal)
+			{
+				modal.style.display = "none";
+			}
+		}
+
+	</script>
+
+
+
+
+{% endblock %}

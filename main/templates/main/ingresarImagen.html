@@ -1,0 +1,270 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+	<button id="nueCat" type="button" class="b_nuevo">Nuevo</button>
+	<!-- Pinta la lista de plantillas guardadas-->
+	<a id="titulo">ADMINISTRAR IMAGENES INICIALES</a>
+	<br><br><br>
+	<center>
+		<table id="lista" class="table table-hover">
+			<thead>
+				<tr>
+					<th>NOMBRE</th>
+					<th colspan="2">OPCIONES</th>
+				</tr>
+			</thead>
+			<tbody>
+		{% for i in imagenes %}
+			<tr>
+				<td>{{ i.1 }}</td>
+				<td><button type="button" class="b_editar" onclick="editar('{{ i.0 }}');">Editar</button></td>
+				<td><button type="button" class="b_editar" onclick="eliminar('{{ i.0 }}');">Eliminar</button></td>
+
+
+
+			</tr>
+		{% endfor %}
+		</table><br>
+	</center>
+	<!-- Fin lista-->
+	<div id="modal" class="modal">
+
+	  <!-- Modal content -->
+		<div class="modal-content">
+			<span class="close">x</span>
+			<!-- Formulario ingresar plantilla-->
+			<form id="formulario" action="{% url 'main:almacenarImagen' %}" method="post">{% csrf_token %}
+
+
+				<input type="hidden" name="id" id="id" value="0"><br>
+				<a id="eti">Nombre:</a> <input type="text" name="nombre" id="nombre"><br><br>
+
+				<a id="eti">Url:</a>    <input type="text" name="url" id="url"><br><br>
+				<button type="button" class="b_guarda" onclick="validar()" value="Guardar" >Guardar</button>
+
+			</form>
+			<!-- Fin Formulario ingresar plantilla-->
+			<div id="mensajeImagen">	</div>
+		</div>
+		<!-- mensaje de estado de guardado-->
+
+
+
+	</div>
+
+
+	<!-- The Modal -->
+
+
+	<script type="text/javascript">
+		function validar()
+		{
+			//validacion formulario plantilla
+
+			if(document.getElementById("nombre").value != "" && document.getElementById("url").value != "")
+			{
+				document.getElementById("formulario").submit();
+			}
+			else
+			{
+				if(document.getElementById("nombre").value == "")
+				{
+
+					document.getElementById("mensajeImagen").innerHTML="";
+					document.getElementById("mensajeImagen").innerHTML=" El campo nombre no puede ser vacio";
+				}
+				if(document.getElementById("url").value == "")
+				{
+					document.getElementById("mensajeImagen").innerHTML="";
+					document.getElementById("mensajeImagen").innerHTML=" El campo url no puede ser vacio";
+				}
+
+			}
+
+		}
+		function editar(imagen_id)
+		{
+			ajaxEditar(imagen_id);
+		}
+		function ajaxEditar(imagen_id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEditar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/editarImagen/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("imagen_id="+imagen_id);
+
+			}
+
+
+			function respuestaEditar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+
+						if(respuest)
+						{
+
+							document.getElementById("nueCat").click();
+							document.getElementById("id").value = respuest[0][0];
+							document.getElementById("nombre").value = respuest[0][1];
+							document.getElementById("url").value = respuest[0][2];
+
+
+
+
+						}
+
+
+					}
+				}
+			}
+
+		function eliminar(imagen_id)
+		{
+			confir = confirm("¿Realmente desea eliminar el registro?");
+			if(confir== true)
+			{
+				ajaxEliminar(imagen_id);
+			}
+		}
+		function ajaxEliminar(imagen_id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEliminar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/eliminarImagen/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("imagen_id="+imagen_id);
+
+			}
+
+
+			function respuestaEliminar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+
+						if(respuest)
+						{
+
+
+							location.reload();
+
+
+
+						}
+
+
+					}
+				}
+			}
+
+			var csrfcookie = function()
+			{
+				//funcion que opcione el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+	</script>
+
+
+
+	<script type="text/javascript">
+	// Get the modal
+		var modal = document.getElementById('modal');
+
+		// Get the button that opens the modal
+		var btn = document.getElementById("nueCat");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("close")[0];
+
+		// When the user clicks on the button, open the modal
+		btn.onclick = function()
+		{
+			modal.style.display = "block";
+			document.getElementById("url").value="";
+			document.getElementById("nombre").value="";
+			document.getElementById("id").value=0;
+		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function()
+		{
+			modal.style.display = "none";
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event)
+		{
+			if (event.target == modal)
+			{
+				modal.style.display = "none";
+			}
+		}
+
+	</script>
+
+
+
+
+{% endblock %}

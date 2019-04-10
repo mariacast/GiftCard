@@ -1,0 +1,726 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+	<a href="{% url 'main:index' %}">.</a>
+	<div class= "doker"  id="mensajeGenerar"></div> <!-- Mensaje de estado de la validacion-->
+	<!-- Formulario para generar el lote-->
+	<div class="card card-container">
+		<form id="formulario" action="{% url 'main:guardar' %}" method="post">{% csrf_token %}
+			<a id="titulo">GENERAR UN LOTE DE CODIGOS QR</a><br><br><br><br>
+				<a>Lote: </a><input type="text" name="lote" id="lote"><br><br>
+
+				<a>Cantidad de Impresiones:</a> <input type="number" id="cantidad" name="cantidad"><br><br>
+
+				<a>Dias de Vigencia:</a> <input type="number" name="dias" id="dias"><br><br>
+
+				<a id="men">Seleccione las Opciones para este lote:</a> <br><br>
+
+				<a id="op">IMAGEN INICIAL</a>       <input id="check" type ="checkbox" name="opciones" value = "I" onchange="listaImagenes();"></input><br><br>
+				<a id="op">PLANTILLA</a>   <input id="check" type ="checkbox" name="opciones" value = "P"></input><br><br>
+				<a id="op">IMAGEN LIBRE</a>       <input id="check" type ="checkbox" name="opciones" value = "L" onchange="listaMarcos();"></input><br><br>
+				<a id="op">MENSAJE</a>     <input id="check" type ="checkbox" name="opciones" value = "M"></input><br><br>
+				<a id="op">CANCION</a>     <input id="check" type ="checkbox" name="opciones" value = "C"></input><br><br>
+				<a id="op">VIDEO</a>       <input id="check" type ="checkbox" name="opciones" value = "V"></input><br><br>
+
+			<input type="hidden" name="imagenInicial" id="imagenInicial">
+			<div id="listaDiv">
+				<a id="men">Seleccione la Imagen Inicial para los Codigos QR:</a> <br><br>
+				<center>
+					<div id="listaImagenesDiv">
+						<table id="tablaImagenes" class="table table-hover">
+							<thead>
+				      <tr>
+				        <th>IMAGEN INICIAL</th>
+				      </tr>
+				    </thead>
+						<tbody>
+						{% for imagen in imagenes %}
+							<tr  id="I_{{ imagen.id }}" onclick="ajaxTraerImagen('{{ imagen.id }}')" style="cursor: pointer; ">
+								<td align='center'>{{ imagen.nombre }}</td>
+							</tr>
+						{% endfor %}
+						</table>
+					</div>
+				</center>
+			</div>
+			<input type="hidden" name="marco" id="marco">
+			<div id="marcoDiv">
+				<a id="men">Seleccione el Marco para los Codigos QR:</a> <br><br>
+				<center>
+					<div id="listaMarcosDiv">
+						<table id="tablaMarcos" class="table table-hover">
+							<thead>
+				      <tr>
+				        <th>MARCOS DISPONIBLES</th>
+				      </tr>
+				    </thead>
+						<tbody>
+						{% for marco in marcos %}
+							<tr  id="M_{{ marco.id }}" onclick="ajaxTraerMarco('{{ marco.id }}')" style="cursor: pointer; ">
+								<td align='center'>{{ marco.nombre }}</td>
+							</tr>
+						{% endfor %}
+						</table>
+					</div>
+				</center>
+			</div>
+			<a id="men">Seleccione las Categorias para este lote:</a> <br><br>
+			<input type="hidden" name="categorias" id="categorias">
+			<center>
+				<div id="cateDiv">
+					<table id="tablaCate" class="table table-hover">
+						<thead>
+						<tr>
+							<th>CATEGORIAS</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for cate in categorias %}
+							<tr id="C_{{ cate.id }}" onclick="selectCate('{{ cate.id }}')">
+								<td>{{ cate.nombre }}</td>
+								<td id="CS_{{ cate.id }}" style="display: none;">0</td>
+							</tr>
+
+						{% endfor %}
+					</table>
+				</div><br><br>
+			</center>
+			<input type="hidden" name="tema" id="tema">
+			<a id="men">Seleccione El tema para los Codigos QR:</a> <br><br>
+				<center>
+					<div id="tabs">
+						<table id="tablaTemas" class="table table-hover">
+							<thead>
+				      <tr>
+				        <th>TEMAS</th>
+				      </tr>
+				    </thead>
+						<tbody>
+						{% for tema in temas %}
+							<tr id="T_{{ tema.id }}" onclick="ajaxTraerTema('{{ tema.id }}')" style="cursor: pointer; ">
+								<td>{{ tema.nombre }}</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+						</table>
+					</div>
+				</center>
+
+		<button type="button" onclick="validar()" value="Generar" class="b_generar">GENERAR</button>
+	</form>
+</div>
+
+	<div id="modal" class="modal">
+
+	  <!-- Modal content -->
+		<div class="modal-content">
+			<span class="close">x</span>
+			<h2 id="nombreTema"></h2>
+			<h4 id="descripcionTema"></h4>
+			<h3>VISTA PREVIA</h3>
+			<div id="tablaDiv" style="">
+			</div>
+
+
+		</div>
+		<img id="temaGrande" src="" onclick="quitarImagen();" >
+		<!-- mensaje de estado de guardado-->
+
+	</div>
+
+	<div id="modal2" class="modal2">
+
+	  <!-- Modal content -->
+		<div class="modal-content2">
+			<span class="close2">x</span>
+			<h2 id="nombreImagen"></h2>
+
+			<img id="imagenModal" onerror="cleanImagen();"/>
+
+
+		</div>
+
+		<!-- mensaje de estado de guardado-->
+
+	</div>
+
+
+	<!-- The Modal -->
+	<div id="modal3" class="modal3">
+
+	  <!-- Modal content -->
+		<div class="modal-content3">
+			<span class="close3">x</span>
+			<h2 id="nombreMarco"></h2>
+
+			<img id="imagenMarco" onerror="cleanImgMarco();"/>
+
+
+		</div>
+
+		<!-- mensaje de estado de guardado-->
+
+	</div>
+
+
+	<!--Fin formulario -->
+
+
+		<script type="text/javascript">
+
+			var regis=0;
+			var listaImg=0;
+			var listaMar=0;
+
+			var span = document.getElementsByClassName("close")[0];
+			span.onclick = function()
+			{
+				modal.style.display = "none";
+				quitarImagen();
+
+
+			}
+			var span2 = document.getElementsByClassName("close2")[0];
+			span2.onclick = function()
+			{
+				modal2.style.display = "none";
+
+
+			}
+
+			var span3 = document.getElementsByClassName("close3")[0];
+			span3.onclick = function()
+			{
+				modal3.style.display = "none";
+
+
+			}
+
+			function selectCate(id)
+			{
+
+				if(document.getElementById("C_"+id).style.background=="")
+				{
+					document.getElementById("C_"+id).style.background="#A9D0F5";
+					document.getElementById("CS_"+id).innerHTML= "1";
+				}
+				else
+				{
+					document.getElementById("C_"+id).style.background="";
+					document.getElementById("CS_"+id).innerHTML="0";
+				}
+			}
+
+			function cleanImagen()
+			{
+				document.getElementById("imagenModal").style.display="none";
+			}
+
+			function listaImagenes()
+			{
+				if(listaImg==0)
+				{
+					document.getElementById("listaDiv").style.display="block"
+					listaImg=1;
+				}
+				else
+				{
+					document.getElementById("listaDiv").style.display="none";
+					listaImg=0;
+					var imagenActual = document.getElementById("imagenInicial").value;
+
+					if(imagenActual != "")
+					{
+						document.getElementById("I_"+imagenActual).style.background="";
+						document.getElementById("imagenInicial").value="";
+					}
+
+				}
+
+			}
+			function cleanImgMarco()
+			{
+				document.getElementById("imagenMarco").style.display="none";
+			}
+
+			function listaMarcos()
+			{
+				if(listaMar==0)
+				{
+					document.getElementById("marcoDiv").style.display="block";
+					listaMar=1;
+				}
+				else
+				{
+					document.getElementById("marcoDiv").style.display="none";
+					listaMar=0;
+					var marcoActual = document.getElementById("marco").value;
+
+					if(marcoActual != "")
+					{
+						document.getElementById("M_"+marcoActual).style.background="";
+						document.getElementById("marco").value="";
+					}
+
+				}
+
+			}
+
+			function ajaxValidar()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  var lote = document.getElementById("lote").value
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaValidar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/validarLote/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"lote": lote});
+			  conexion.send(data)
+
+
+			}
+
+
+			function respuestaValidar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+						if(respuest)
+						{
+							if(respuest==1)
+							{
+								document.getElementById("mensajeGenerar").innerHTML="";
+								document.getElementById("mensajeGenerar").innerHTML="El lote ya existe, no se puede generar de nuevo";
+								subir();
+								setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+							}
+							else if(respuest==2)
+							{
+								document.getElementById("mensajeGenerar").innerHTML="";
+								document.getElementById("mensajeGenerar").innerHTML="Generado con exito";
+								subir();
+								setTimeout(function(){document.getElementById("formulario").submit();},3000);
+							}
+
+						}
+
+
+
+
+
+					}
+				}
+			}
+
+			function ajaxTraerImagen(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaTraerImagen;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/traerImagen/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"id": id});
+			  conexion.send(data);
+
+
+			}
+
+
+			function respuestaTraerImagen()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+						if(respuest)
+						{
+
+							document.getElementById("modal2").style.display="block";
+							document.getElementById("nombreImagen").innerHTML= respuest.nombre;
+							document.getElementById("imagenModal").src= respuest.url;
+							document.getElementById("imagenModal").style.display="block";
+
+							var imagenActual = document.getElementById("imagenInicial").value;
+
+
+							if(imagenActual != "")
+							{
+								document.getElementById("I_"+imagenActual).style.background="";
+							}
+
+
+							document.getElementById("I_"+respuest.id).style.background="#A9D0F5";
+							document.getElementById("imagenInicial").value=respuest.id;
+
+
+
+
+						}
+
+
+
+
+
+					}
+				}
+			}
+
+			function ajaxTraerMarco(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaTraerMarco;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/traerMarco/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"id": id});
+			  conexion.send(data);
+
+
+			}
+
+
+			function respuestaTraerMarco()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+						if(respuest)
+						{
+
+							document.getElementById("modal3").style.display="block";
+							document.getElementById("nombreMarco").innerHTML= respuest.nombre;
+							document.getElementById("imagenMarco").src= respuest.enlace;
+							document.getElementById("imagenMarco").style.display="block";
+
+							var marcoActual = document.getElementById("marco").value;
+
+
+							if(marcoActual != "")
+							{
+								document.getElementById("M_"+marcoActual).style.background="";
+							}
+
+
+							document.getElementById("M_"+respuest.id).style.background="#A9D0F5";
+							document.getElementById("marco").value=respuest.id;
+
+
+
+
+						}
+
+
+
+
+
+					}
+				}
+			}
+
+
+			function ajaxTraerTema(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(vendedor);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaTraerTema;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/traerTema/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  var data = JSON.stringify({"id": id});
+			  conexion.send(data);
+
+
+			}
+
+
+			function respuestaTraerTema()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+						if(respuest)
+						{
+							document.getElementById("nombreTema").innerHTML= respuest.nombre
+							document.getElementById("descripcionTema").innerHTML= respuest.descripcion
+							enlaces= respuest.enlaces
+							var expresionRegular = /\s*;\s*/;
+							var listaEnlaces = enlaces.split(expresionRegular);
+
+							selectTema(respuest.id)
+							var tablaVal = document.getElementById("tImagenes")
+							if(tablaVal)
+							{
+								padre = tablaVal.parentNode;
+								padre.removeChild(tablaVal);
+								regis=0;
+							}
+							var divtable = document.getElementById("tablaDiv");
+							var table = document.createElement("table");
+							table.setAttribute("id","tImagenes");
+							var row = table.insertRow(0);
+							for(i=0;i<listaEnlaces.length;i++)
+							{
+
+								var celda = row.insertCell(regis);
+								var etiImg = document.createElement("IMG");
+								etiImg.setAttribute("src",listaEnlaces[i]);
+								etiImg.setAttribute("class","imgClass");
+								etiImg.setAttribute("id","Imagen_"+i);
+								etiImg.setAttribute("onerror","cargarImagen('"+i+"')");
+								etiImg.setAttribute("onclick","agrandarImagen('"+i+"')");
+								celda.appendChild(etiImg);
+								regis=regis+1
+							}
+							divtable.appendChild(table);
+
+
+
+
+
+						}
+
+
+
+
+
+					}
+				}
+			}
+
+			function agrandarImagen(id)
+			{
+
+				document.getElementById('temaGrande').src=document.getElementById("Imagen_"+id).src;
+				document.getElementById('temaGrande').style.display="block";
+			}
+			function quitarImagen()
+			{
+
+				document.getElementById('temaGrande').src="";
+				document.getElementById('temaGrande').style.display="none";
+			}
+			function cargarImagen(id)
+			{
+				document.getElementById("Imagen_"+id).style.display="none";
+			}
+			function selectTema(id)
+			{
+				var actual = document.getElementById("tema").value;
+
+
+				if(actual != "")
+				{
+					document.getElementById("T_"+actual).style.background="";
+				}
+
+				document.getElementById("modal").style.display="block";
+				document.getElementById("T_"+id).style.background="#A9D0F5";
+				document.getElementById("tema").value=id;
+			}
+			function validar()
+			{
+				//validacion de  de datos de formulario
+				if(document.getElementById("dias").value != "" && document.getElementById("lote").value != "" && document.getElementById("cantidad").value != "")
+				{
+					if(listaImg==1 && document.getElementById("imagenInicial").value =="")
+					{
+						document.getElementById("mensajeGenerar").innerHTML="";
+						document.getElementById("mensajeGenerar").innerHTML="Debe elegir una Imagen Inicial.";
+						subir();
+						setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+					}
+					else
+					{
+						var x = document.getElementById("tablaCate").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+						var txt = "";
+						var i;
+						var cate="";
+						for (i = 0; i < x.length; i++) {
+							console.log(x[i].style.background)
+							if(x[i].getElementsByTagName("td")[1].innerHTML=="1")
+							{
+								var codigo = x[i].id;
+								var codigo = codigo.replace("C_","");
+								cate= cate+codigo+";";
+							}
+						}
+						cate = cate.substring(0,cate.length-1);
+						document.getElementById("categorias").value=cate;
+
+
+						var checkedValue = null;
+						var inputElements = document.getElementsByName('opciones');
+						var opc ="";
+						for(var i=0; inputElements[i]; ++i){
+
+							  if(inputElements[i].checked){
+								   checkedValue = inputElements[i].value;
+
+								   opc= opc+checkedValue;
+							  }
+						}
+						if(opc=="I")
+						{
+							document.getElementById("mensajeGenerar").innerHTML="";
+							document.getElementById("mensajeGenerar").innerHTML="Debe elegir una Opcion mas para el lote.";
+							subir();
+							setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+						}
+						else if((opc=="IP" || opc=="PI" || opc=="P") && cate=="" )
+						{
+							document.getElementById("mensajeGenerar").innerHTML="";
+							document.getElementById("mensajeGenerar").innerHTML="Debe elegir al menos una categoria";
+							subir();
+							setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+						}
+						else
+						{
+							ajaxValidar();
+
+						}
+					}
+				}
+				else
+				{
+					if(document.getElementById("lote").value == "")
+					{
+
+						document.getElementById("mensajeGenerar").innerHTML="";
+						document.getElementById("mensajeGenerar").innerHTML=" El campo Lote no puede ser vacio";
+						subir();
+						setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+					}
+					if(document.getElementById("cantidad").value == "")
+					{
+						document.getElementById("mensajeGenerar").innerHTML="";
+						document.getElementById("mensajeGenerar").innerHTML=" El campo Cantidad no puede ser vacio";
+						subir();
+						setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+					}
+					if(document.getElementById("dias").value == "")
+					{
+						document.getElementById("mensajeGenerar").innerHTML="";
+						document.getElementById("mensajeGenerar").innerHTML=" El campo Dias no puede ser vacio";
+						subir();
+						setTimeout(function(){document.getElementById("mensajeGenerar").innerHTML="";},3000);
+					}
+
+
+				}
+			}
+			function subir() {
+				if (document.body.scrollTop != 0 || document.documentElement.scrollTop != 0)
+				{
+					window.scrollBy(0, -15);
+					arriba = setTimeout('subir()', 10);
+				}
+				else clearTimeout(arriba);
+			}
+			var csrfcookie = function()
+			{
+				//funcion que opcione el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+		</script>
+
+
+
+{% endblock %}

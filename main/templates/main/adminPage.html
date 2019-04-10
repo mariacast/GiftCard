@@ -1,0 +1,400 @@
+
+<html>
+	{% load staticfiles %}
+	<head>
+
+		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+		<link rel ="stylesheet" href="/static/main/{{ tema }}/css/style1_tem_admin.css">
+		<link rel ="stylesheet" href="/static/main/{{ tema }}/css/style_admin.css">
+		<link rel ="stylesheet" href="/static/main/admin/css/bootstrap.css">
+
+	</head>
+
+  	<body onload = "validar('{{ opciones }}','{{ estado }}');">
+			<div id="log_ad">
+				<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="logo_gift_fin"/><br>
+			</div>
+		<div id="administrarDiv">
+			
+			<button id="cerrarSesion" class="BtnCerrar" type="button" onclick="ajaxCerrar('{{ code_id }}','{{ code_hash }}');" >CERRAR SESION</button>
+			<!-- tabla de lista de codigo -->
+			<table id="adminTable" class="table table-hover">
+				<thead>
+					<tr>
+					<th>FECHA DE GRABACION</th>
+					<th>FECHA DE EXPIRACION</th>
+					<th>PIN</th>
+					<th>ESTADO</th>
+					<th colspan="2"> OPCIONES</th>
+
+				</tr>
+			</thead>
+			<tbody>
+
+				{% for i in listaCodigo%}
+					<!--ciclo que pinta los codigos -->
+					<tr>
+						<td align="center">{{ i.1 }}</td>
+						<td align="center">{{ i.2 }}</td>
+						<td align="center">{{ i.4 }}</td>
+						<!-- si el estado es 0,1,2 da las opciones de ver, eliminar y extender-->
+						{% if i.3 == "0" %}
+							<td align="center">Sin grabar </td>
+						{% elif i.3 == "1" %}
+							<td align="center">Mensaje grabado </td>
+							<td align="center"> <a style="cursor: pointer" onclick="verGrabacion({{ i.0 }});" ><button type="button" class="b_ver">Ver</button></a> </td>
+							<td align="center"> <a style="cursor: pointer" onclick="eliminarGrabacion({{ i.0 }});" ><button type="button" class="b_editar" >Eliminar</button></a></td>
+
+
+						{% elif i.3 == "2" %}
+							<td align="center">Mensaje Visto </td>
+							<td align="center"> <a style="cursor: pointer" onclick="verGrabacion({{ i.0 }});"  ><button type="button" class="b_ver">Ver</button></a> </td>
+							<td align="center"> <a style="cursor: pointer" onclick="eliminarGrabacion({{ i.0 }});" ><button type="button" class="b_editar" >Eliminar</button></a></td>
+
+
+						<!-- si el estado es 3,4,5 no brinda las opciones de ver, eliminar y extender  -->
+						{% elif i.3 == "3" %}
+							<td  aling="center">Mensaje expirado</td>
+							<td align="center"> </td>
+							<td align="center"> </td>
+
+
+						{% elif i.3 == "4" %}
+							<td align="center">Usado para extender </td>
+							<td align="center"> </td>
+							<td align="center"> </td>
+
+
+						{% elif i.3 == "5" %}
+							<td align="center">Mensaje eliminado </td>
+							<td align="center"> </td>
+							<td align="center"> </td>
+
+
+						{% endif %}
+
+					</tr>
+
+				{% endfor %}
+				<div id="CodigosAdd"></div>
+
+
+			</table>
+			<div id="mensajeAdmin"></div> <!--Mensaje de estado del ajax -->
+			<div style="display:none"  >
+			<img src="/static/main/{{ tema }}/images/re1.png" style="display:none"  id="grabarMensaje" onclick="g_grabarMensaje('{{ code_id }}','{{ code_hash }}');"/>
+			</div>
+
+		</div>
+		<div id="pie">
+			<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+
+			var id_code = "";
+			var hash_code ="";
+
+			function validar(opciones,estado)
+			{
+				// funciones que valida opciones y estados
+
+				if(opciones != "")
+				{
+					//si tiene oopciones para grabar: mensaje, plantilla cancion o video se muestra el boton para que valla a la vista de grabarMultimedia
+					document.getElementById("grabarMensaje").style.display = "block";
+				}
+				else
+				{
+					//si no tiene opcion no muestra el boton
+					document.getElementById("grabarMensaje").style.display = "none";
+				}
+				if(estado=="grabado")
+				{
+					//si el codigo qr ya tiene grabacion oculta el boton de grabar mensaje
+					document.getElementById("grabarMensaje").style.display = "none";
+				}
+			}
+
+
+			function g_grabarMensaje(code_id,code_hash)
+			{
+				//redirecciona a la view grabarMultimedia
+				location.href= "/main/multimedia/?id="+code_id+"&hash="+code_hash;
+			}
+			//ajax de cerrar sesion
+			function ajaxCerrar(code_id,code_hash)
+			{
+
+				id_code= code_id;
+				hash_code = code_hash;
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaCerrar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/cerrarMultimedia/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send();
+
+			}
+
+
+			function respuestaCerrar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje==1)
+						{
+
+							location.href= "/";
+						}
+
+					}
+				}
+			}
+
+			function verCambio()
+			{
+				//se muestra la vista de cambiar la contraseña
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("cambioDiv").style.display = "block";
+
+
+
+				todoVista=0;
+				plantillaVista=0;
+				mensajeVista=0;
+				videoVista=0;
+				registroVista=0;
+				loginVista=0;
+				recuperarVista=0;
+				administrarVista=0;
+				cambioVista=1;
+
+			}
+
+			function extenderGrabacion(id, code_id, code_hash)
+			{
+				// funcion para estender el tiempo del codigoqr
+				id_code= code_id;
+				hash_code = code_hash;
+				ajaxExtender(id);
+
+			}
+
+			function ajaxExtender(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaExtender;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/extenderGrabacion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("code_id="+id);
+
+			}
+
+
+			function respuestaExtender()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje!="")
+						{
+
+							if(mensaje!= 1)
+							{
+
+
+								document.getElementById("mensajeAdmin").innerHTML = "";
+								document.getElementById("mensajeAdmin").innerHTML = "El codigo extendido con exito";
+								extendidoSesion=1;
+							}
+							else
+							{
+								document.getElementById("mensajeAdmin").innerHTML = "";
+								document.getElementById("mensajeAdmin").innerHTML = "El codigo Qr no puede ser extendido porque el codigo actual ya fue utilizado";
+							}
+						}
+
+					}
+				}
+			}
+
+
+
+			function verGrabacion(id)
+			{
+				//funcion para ver grabacion
+					ajaxVer(id)
+
+			}
+
+			function ajaxVer(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaVer;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/verGrabacion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("code_id="+id);
+
+			}
+
+
+			function respuestaVer()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje!="")
+						{
+							mensaje= mensaje.substring(1, mensaje.length -1);
+
+							location.href=mensaje;
+						}
+
+					}
+				}
+			}
+
+
+
+			function eliminarGrabacion(id)
+			{
+				//funcion para elminar grabacion
+				conf = confirm("¿Realmente desea borrar el mensaje?")
+				if(conf == true)
+				{
+					ajaxEliminar(id)
+				}
+			}
+
+			function ajaxEliminar(id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEliminar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/eliminarGrabacion/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("code_id="+id);
+
+			}
+
+
+			function respuestaEliminar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje!="")
+						{
+
+							location.reload();
+						}
+
+					}
+				}
+			}
+			var csrfcookie = function()
+			{
+				//funcion para calcular el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+	</script>
+
+</html>

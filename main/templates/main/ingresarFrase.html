@@ -1,0 +1,284 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+	<button id="nueCat" type="button" class="b_nuevo">Nuevo</button>
+	<!-- Pinta la lista de frases guardadas-->
+	<a id="titulo">ADMINISTRAR FRASES</a>
+
+	<br><br><br>
+	<center>
+		<table id="lista" class="table table-hover">
+			<thead>
+				<tr>
+					<th>CATEGORIA</th>
+					<th>CONTENIDO</th>
+					<th colspan="2">OPCIONES</th>
+				</tr>
+			</thead>
+			<tbody>
+		{% for i in frases %}
+			<tr>
+				<td class="nom">{{ i.1 }}</td>
+				<td class="texto">{{ i.2 }}</td>
+				<td><button type="button" class="b_editar" onclick="editar('{{ i.0 }}');">Editar</button></td>
+				<td><button type="button" class="b_editar" onclick="eliminar('{{ i.0 }}');">Eliminar</button></td>
+
+
+			</tr>
+		{% endfor %}
+		</tbody>
+		</table>
+	</center>
+	<!--Fin lista -->
+
+	<div id="modal" class="modal">
+
+	  <!-- Modal contenido-->
+		<div class="modal-content">
+			<span class="close">x</span>
+			<!-- Formulario ingresar plantilla-->
+			<form id="formulario" action="{% url 'main:almacenarFrase' %}" method="post">{% csrf_token %}
+				<a id="cate">Categoria  :</a>
+				<select name="categoria" id="Categoria1">
+					{% for i in categorias %}
+						<option value="{{i.0}}">{{i.1}}</option>
+					{% endfor %}
+				</select>
+				<br>
+				<input type="hidden" name="id" id="id" value="0"><br>
+				<a>Contenido:</a><br>
+				<textArea name="contenido" id="contenido" ></textArea> <br><br>
+
+
+				<button type="button" class="b_guarda" onclick="validar()" value="Guardar" >Guardar</button>
+				
+				<!--<input type="button" onclick="validar()" value="Guardar">-->
+			</form>
+			<!-- Fin Formulario ingresar plantilla-->
+			<div id="mensajeFrase">	</div>
+		</div>
+		<!-- mensaje de estado de guardado-->
+
+
+
+	</div>
+
+
+
+
+	<!-- The Modal -->
+
+
+	<script type="text/javascript">
+		function validar()
+		{
+			//validacion formulario plantilla
+
+			if(document.getElementById("Categoria1").value != "" && document.getElementById("contenido").value != "" )
+			{
+				document.getElementById("formulario").submit();
+			}
+			else
+			{
+				if(document.getElementById("contenido").value == "")
+				{
+
+					document.getElementById("mensajeFrase").innerHTML="";
+					document.getElementById("mensajeFrase").innerHTML=" El campo contenido no puede ser vacio";
+				}
+
+				if(document.getElementById("Categoria1").value == "")
+				{
+					document.getElementById("mensajeFrase").innerHTML="";
+					document.getElementById("mensajeFrase").innerHTML=" El campo categoria no puede ser vacio";
+				}
+
+
+			}
+
+		}
+		function editar(frase_id)
+		{
+			ajaxEditar(frase_id);
+		}
+		function ajaxEditar(frase_id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEditar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/editarFrase/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("frase_id="+frase_id);
+
+			}
+
+
+			function respuestaEditar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+
+						if(respuest)
+						{
+
+							document.getElementById("nueCat").click();
+							document.getElementById("id").value = respuest[0][0];
+							document.getElementById("contenido").value = respuest[0][1];
+							document.getElementById("Categoria1").value = respuest[0][2];
+
+
+
+						}
+
+
+					}
+				}
+			}
+
+		function eliminar(frase_id)
+		{
+			confir = confirm("¿Realmente desea eliminar el registro?");
+			if(confir== true)
+			{
+				ajaxEliminar(frase_id);
+			}
+		}
+		function ajaxEliminar(frase_id)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaEliminar;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/eliminarFrase/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("frase_id="+frase_id);
+
+			}
+
+
+			function respuestaEliminar()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						respuest = conexion.responseText;
+
+						respuest = JSON.parse(respuest);
+
+						if(respuest)
+						{
+
+
+							location.reload();
+
+
+
+						}
+
+
+					}
+				}
+			}
+
+			var csrfcookie = function()
+			{
+				//funcion que opcione el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+	</script>
+
+
+
+	<script type="text/javascript">
+	// Get the modal
+		var modal = document.getElementById('modal');
+
+		// Get the button that opens the modal
+		var btn = document.getElementById("nueCat");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("close")[0];
+
+		// When the user clicks on the button, open the modal
+		btn.onclick = function()
+		{
+			modal.style.display = "block";
+			document.getElementById("Categoria1").value="";
+			document.getElementById("contenido").value="";
+			document.getElementById("id").value=0;
+		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function()
+		{
+			modal.style.display = "none";
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event)
+		{
+			if (event.target == modal)
+			{
+				modal.style.display = "none";
+			}
+		}
+
+	</script>
+
+
+
+
+{% endblock %}

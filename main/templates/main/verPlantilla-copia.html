@@ -1,0 +1,669 @@
+
+<html>
+	{% load staticfiles %}
+	<head>
+
+		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+		<link rel ="stylesheet" href="/static/main/{{ tema }}/css/verplantilla.css">
+	</head>
+
+
+  	<body onload= "verificar('{{ vp }}','{{ vm }}','{{ vv }}','{{ um }}','{{ from }}','{{ mensaje }}','{{ vi }}','{{ vl }}');" >
+
+		<!--<img src="/static/main/{{ tema }}/images/admin.png"  id="botonAdministrar"  style="display:none" href= "https://it-sbox.com:8000/main/administracion/"/>-->
+		<a  id="botonAdministrar"  style="display:none" href= "/main/administracion/"><img src="/static/main/{{ tema }}/images/admin.png" id="ad"/></a><br>
+		<div id="log_fin">
+			<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="logo_gift_fin"/><br>
+		</div>
+		
+		<!-- vista de plantilla -->
+		<div id="imagenInicialDiv1" style="display:none">
+			<img src="/static/main/{{ tema }}/images/adelan.png" id="siguienteImagen" onclick="nextImagen('imagenInicial','{{ vm }}','{{ vv }}','{{ vp }}','{{ um }}');"/><br><br><br>
+			<h1 id="titulo" >OBSERVA LA IMAGEN INICIAL</h1>
+			<!-- iframe que pinta plantilla -->
+			<img src="{{ imagenInicial }}"  id ="imagenInicial"  />
+			<br><br>
+			<!-- boton compartir en twitter-->
+
+			<!-- div que muestra el formulario para enviar el correo -->
+
+		</div>
+		<div id="imagenLibDiv" style="display:none">
+			<img src="/static/main/{{ tema }}/images/atr.png" id="atrasLibre" onclick="verPlantilla();">
+			<img src="/static/main/{{ tema }}/images/adelan.png" id="siguienteLibre" onclick="nextLibre('imagenInicial','{{ vm }}','{{ vv }}','{{ vp }}','{{ um }}');"/><br><br><br>
+			<h1 id="titulo" >OBSERVA LA IMAGEN INICIAL</h1>
+			<!-- iframe que pinta plantilla -->
+			<img src="{{ imgLibre }}"  id ="imgLib"  />
+			<br><br>
+			<!-- boton compartir en twitter-->
+
+			<!-- div que muestra el formulario para enviar el correo -->
+
+		</div>
+		
+		<!--Vista pantalla completa imagen-->
+		<div id="imagenDiv" style="display: none">
+			<img src="/static/main/{{ tema }}/images/cerrar11.png" id="cerrarFull" onclick="cerrarFull1();"/><br>
+			<img id="imagenFull" />
+			{{ srcVideo }}
+		</div>
+		<!---->
+
+
+		<!-- vista de plantilla -->
+		<div id="plantillaDiv1" style="display:none">
+			{% if vi != "" %}
+				<img src="/static/main/{{ tema }}/images/atr.png" id="atrasMensaje" onclick="verImagenInicial();">
+			{% endif %}
+			<img src="/static/main/{{ tema }}/images/adelan.png" id="siguientePlantilla" onclick="verMensaje('plantilla','{{ vm }}','{{ vv }}','{{ vp }}','{{ um }}');"/><br><br><br>
+			<h1 id="titulo" >OBSERVA LA TARJETA QUE TE HAN ENVIADO</h1>
+			<!-- iframe que pinta plantilla -->
+			<img src="{{ srcPlantilla }}"  id ="imagenFinal" onclick="ampliarImagen(1);" />
+			<br><br>
+			<!-- boton compartir en twitter-->
+
+			<!-- div que muestra el formulario para enviar el correo -->
+
+		</div>
+		<!-- FIn vista de plantilla -->
+
+		<!-- div del mensaje y cancion-->
+		<div id="mensajeDiv" style="display:none">
+			<img src="/static/main/{{ tema }}/images/atr.png" id="atrasMensaje" onclick="verImgLibre();">
+			<img src="/static/main/{{ tema }}/images/adelan.png" id="siguienteMensaje" onclick="verVideo();"><br><br><br>
+			<h1 id="titulo" >OBSERVA El MENSAJE QUE TE HAN ENVIADO</h1>
+			<!-- iframe que pinta la cancion-->
+			<iframe src="{{ urlMusica }}"  id ="playerFinal" ></iframe>
+			<!-- etiqueta que pinta el mensaje-->
+			<div id="mensajeFinal"></div>
+			<!-- boton que comparte twitter-->
+		</div>
+
+		<!--FIN div del mensaje y cancion-->
+
+		<!--div del video-->
+		<div id="videoDiv" style="display:none">
+			<img src="/static/main/{{ tema }}/images/atr.png" id="atrasGrabacion" onclick="backGrabacion('video','{{ vm }}','{{ vv }}','{{ vp }}','{{ um }}');"/><br><br><br>
+			<h1 id="titulo" >OBSERVA El VIDEO QUE TE HAN ENVIADO</h1>
+
+			{% if arcVideo == 1 %}
+				<video id="grabacionFinal" src="{{ srcVideo }}"  onError="mensajeVideo();" controls></video>
+
+			{% elif arcVideo == "" and tiempo == 1 %}
+				<h3>¿Su video no carga? </h3>
+				<a id="men_usu" onclick="abrirPin()">Haga click aqui para grabar de nuevo</a>
+
+			{% elif arcVideo == "" %}
+				<h3>Su Video esta siendo procesado, estara listo en unos minutos. Por favor intente mas tarde. </h3>
+
+			{% endif %}
+			<br>
+			<!--boton que comparte en twitter -->
+
+		</div>
+
+		<div id="modal" class="modal">
+			<div class="modal-content">
+				<img src="/static/main/{{ tema }}/images/cerrar11.png" id="cerrarModal" onclick="cerrarModal1();"/><br><br>
+				<center>
+					<h1 id="tit_pin"> PIN DE SEGURIDAD PARA GRABAR DE NUEVO EL MENSAJE COMPLETO </h1>
+					Ingrese su PIN de seguridad para borrar todo el contenido almacenado y grabar de nuevo su mensaje a totalidad. Recuerde  que perdera todo lo guardado, asegurese de extraer el mensaje de texto antes de enviar el PIN.
+					<br>
+					<br>
+					<br>
+					Digite su PIN: <input type="text" id="pinUsu" name="pinUsu">
+					<br>
+					<br>
+					<br>
+					<img src="/static/main/{{ tema }}/images/envi.png" id="bEnviar" onclick="enviarPin();"/><br><br>
+				</center>
+				<h1 id="mensajePin" ></h2>
+
+
+
+			</div>
+		</div>
+    	<!-- fin div del video-->
+
+    	<!--Botones redes sociales-->
+		<div id="redes">
+			<a id ="red1" href="http://twitter.com/share?url={{ url }}{{ code }}/{{ hash }}{{ page_url }}&amp;text={{ title }}" target="_blank" title="{{ share_txt }} {{ service }}">
+					<img id="twitter"  src="/static/main/{{ tema }}/images/t1.png" alt="{{ share_txt }} {{ service }}"/>
+			</a>
+			<!--boton que comparte en facebook -->
+
+			<a id ="red2" href="http://www.facebook.com/share.php?u={{ url }}{{ code }}/{{ hash }}{{ page_url }}&amp;t={{ title }}" target="_blank" title="{{ share_txt }} {{ service }}">
+				<img id="face" src="/static/main/{{ tema }}/images/fa1.png" alt="{{ share_txt }} {{ service }}"/>
+			</a>
+			<!--boton que muestra opcion para enviar correo-->
+			<a id ="red3" onclick="mostrarCorreo();"  >
+				<img id = "correo" src="/static/main/{{ tema }}/images/g1.png" alt="{{ share_txt }} {{ service }}"/>
+			</a>
+
+			</br>
+
+			<div style="display:none" id="correoDiv">
+				<!-- formulario para enviar correo-->
+				<div id="destino">
+					<input name="datos" type= "hidden"  id="datos" value= {{datos}}>
+
+					<a>Direccion destino</a><br>
+					<input type="text" name="correoDestino" id="correoDestino"><br>
+					<img src="/static/main/{{ tema }}/images/envi.png" id = "btnEnviar" type="button" onclick="enviarCorreo('{{ compartirEnlace}}','{{ code }}');" value="Enviar">
+
+				</div>
+
+
+				<!-- fin formulario para enviar correo-->
+			</div>
+			<div id="mensajeCorreo"></div>
+		</div>
+		<div id="expiracionDiv">
+			<h4 id="fecha">Este contenido estara vigente hasta: {{ expiracion }} - Dias restantes: {{ diasRestantes }} </h4>
+			<h4 id="diasRes"></h4>
+		
+		</div>
+		<div id="pie">
+			<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+		</div>
+    </body>
+    <script type="text/javascript">
+
+		var enlace="";
+		var id_code= "{{ code }}";
+		var mensajeFina="";
+		var valiVideo="";
+		var $fromImg;
+
+		function abrirPin()
+		{
+			document.getElementById("modal").style.display="block";
+		}
+		function cerrarModal1()
+		{
+			modal.style.display = "none";
+		}
+		function enviarPin()
+		{
+			var pinUsu= document.getElementById("pinUsu").value;
+			var pinSis= "{{ pin }}";
+
+
+			if(pinUsu == pinSis)
+			{
+				ajaxPin();
+
+			}
+			else
+			{
+				document.getElementById("mensajePin").innerHTML="PIN INCORRECTO";
+				setTimeout(function(){document.getElementById("mensajePin").innerHTML="";},4000);
+			}
+		}
+
+		function ajaxPin()
+		{
+		  var code = "{{ code }}";
+		  if(window.XMLHttpRequest)
+		  {
+			conexion = new XMLHttpRequest();
+		  }
+		  else if(window.ActiveXObject)
+		  {
+			conexion = new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+
+		  //var comentarios=encodeURIComponent(categoria);
+
+		  // Preparar la funcion de respuesta
+		  conexion.onreadystatechange = respuestaFrases;
+
+		  // Realizar peticion HTTP
+		  conexion.open('POST', '/main/limpiarCodigo/');
+		  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+		  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+		  conexion.send("code="+code);
+
+		}
+
+
+		function respuestaFrases()
+		{
+			if(conexion.readyState == 4)
+			{
+				if(conexion.status == 200)
+				{
+
+					respuest = conexion.responseText;
+					respuest = JSON.parse(respuest);
+
+					if(respuest!="")
+					{
+
+						location.href = "{{ url }}"+"{{ code }}"+"/"+"{{ hash }}";
+
+					}
+
+
+				}
+			}
+		}
+
+
+		function ampliarImagen(fromImagen)
+		{
+			$fromImg=fromImagen;
+
+			var imagenSRC = document.getElementById('imagenFinal').src;
+			document.getElementById('imagenFull').src = imagenSRC;
+			document.getElementById('plantillaDiv1').style.display = "none";
+			document.getElementById('redes').style.display = "none";
+			document.getElementById('imagenDiv').style.display = "block";
+
+
+
+		}
+
+		function cerrarFull1()
+		{
+			document.getElementById('imagenFull').src = "";
+			document.getElementById('imagenDiv').style.display = "none";
+			if($fromImg=="1")
+			{
+				document.getElementById('plantillaDiv1').style.display = "block";
+				document.getElementById('redes').style.display = "block";
+			}
+
+
+		}
+
+		function mensajeVideo()
+		{
+			if(valiVideo!= "")
+			{
+				alert('El video estara listo en cuanto antes, regrese mas tarde.');
+			}
+		}
+
+		function enviarCorreo(compartirEnlace, code)
+		{
+			document.getElementById("correoDiv").style.display= "none";
+			document.getElementById("mensajeCorreo").innerHTML= "";
+			document.getElementById("mensajeCorreo").innerHTML= "Enviando...";
+			document.getElementById('btnEnviar').onclick = enviarCorreo;
+
+
+			enlace = compartirEnlace;
+
+			if(document.getElementById('correoDestino').value=="")
+			{
+				document.getElementById('mensajeCorreo').innerHTML ="";
+				document.getElementById('mensajeCorreo').innerHTML ="El campo Direccion Destino no puede ser Vacio";
+
+			}
+			else
+			{
+				expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+				if ( !expr.test(document.getElementById("correoDestino").value) )
+				{
+					document.getElementById("mensajeCorreo").innerHTML= "";
+					document.getElementById("mensajeCorreo").innerHTML= "El campo Direccion Destino debe tener ser una direccion de electronico correcta";
+
+				}
+				else
+				{
+					document.getElementById('btnEnviar').onclick = false;
+					ajaxCorreo();
+				}
+			}
+		}
+
+		function ajaxCorreo()
+		{
+		  // Obtener la instancia del objeto XMLHttpRequest
+
+		  if(window.XMLHttpRequest)
+		  {
+			conexion = new XMLHttpRequest();
+		  }
+		  else if(window.ActiveXObject)
+		  {
+			conexion = new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+
+		  //var comentarios=encodeURIComponent(categoria);
+
+		  // Preparar la funcion de respuesta
+		  conexion.onreadystatechange = respuestaCorreo;
+
+		  // Realizar peticion HTTP
+		  conexion.open('POST', '/main/send_mail/');
+		  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+		  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+
+		  conexion.send("correoDestino="+document.getElementById('correoDestino').value+"&enlace="+enlace+"&code="+id_code);
+
+		}
+
+
+		function respuestaCorreo()
+		{
+			if(conexion.readyState == 4)
+			{
+				if(conexion.status == 200)
+				{
+
+					respuest = conexion.responseText;
+
+
+					if(respuest)
+					{
+
+						document.getElementById("mensajeCorreo").innerHTML= "";
+						document.getElementById("mensajeCorreo").innerHTML= respuest;
+						document.getElementById('btnEnviar').onclick = enviarCorreo;
+						document.getElementById("correoDestino").value = "";
+
+
+					}
+				}
+			}
+		}
+
+
+		var csrfcookie = function()
+		{
+			//funcion que opcione el token de django
+			var cookieValue = null,
+				name = 'csrftoken';
+			if (document.cookie && document.cookie !== '')
+			{
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++)
+				{
+					var cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) == (name + '='))
+					{
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		};
+		function verificar(srcPlantilla,mensaje,video,musica,from,menFinal,imagenInicial,imgLib)
+		{
+			//funcion que valida las opciones o mensaje que se guardaron en el codigo qr
+			valiVideo= video;
+
+			mensajeFinal=menFinal;
+
+			if(from== "confUsuario")
+			{
+				// si la vista se llama desde la view de confirmar y tiene usuario registrado se muestra el boton de administrar
+				document.getElementById("botonAdministrar").style.display = "inline";
+			}
+			else if (from== "confAnonimo")
+			{
+				// si la vista se llama desde la view de confirmar y NO tiene usuario registrado NO se muestra el boton de administrar
+				document.getElementById("botonAdministrar").style.display = "none";
+			}
+			else
+			{
+				//si proviene desde otra opcion no se muestra el boton
+				document.getElementById("botonAdministrar").style.display = "none";
+			}
+			
+			if(imagenInicial != "")
+			{
+				verImagenInicial();
+			}
+			else
+			{
+				if(srcPlantilla!= "")
+
+				{
+					//si hay plantilla se muestra la vista de plantilla
+					if(video=="" && (mensaje=="" && musica=="" ))
+					{
+						musica="";
+						document.getElementById("siguientePlantilla").style.display = "none";
+					}
+					verPlantilla();
+				}
+				else
+				{
+					//si no se envia a la funcion de ver mensaje
+					
+
+
+					verMensaje("plantilla",mensaje,video,srcPlantilla,musica);
+				}
+			}
+
+
+		}
+		function verImagenInicial()
+		{
+			document.getElementById("imagenInicialDiv1").style.display="block";
+			document.getElementById("plantillaDiv1").style.display = "none";
+			document.getElementById("videoDiv").style.display = "none";
+			document.getElementById("mensajeDiv").style.display = "none";
+			document.getElementById("imagenLibDiv").style.display="none";
+		}
+		function verImgLibre()
+		{
+			if('{{ vl }}' != "")
+			{
+				document.getElementById("imagenLibDiv").style.display="block";
+				document.getElementById("imagenInicialDiv1").style.display="none";
+				document.getElementById("plantillaDiv1").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("mensajeDiv").style.display = "none";
+				if('{{ vp }}' =="" && '{{ vi }}' =="")
+				{
+					document.getElementById("atrasLibre").style.display = "none";
+				}
+				if('{{ vm }}' =="" && '{{ vv }}' =="")
+				{
+					document.getElementById("siguienteLibre").style.display = "none";
+				}
+				
+			}
+			else if('{{ vp }}' != "")
+			{
+				verPlantilla()
+			}
+			else
+			{
+				verImagenInicial();
+			}
+		}
+		function nextImagen()
+		{
+			document.getElementById("imagenInicialDiv1").style.display="none";
+			if('{{ vp }}' != '')
+			{
+				verPlantilla();
+			}
+			else if('{{ vm }}' != '')
+			{
+				verMensaje('plantilla','{{ vm }}','{{ vv }}','{{ vp }}','{{ um }}');
+			}
+			else if('{{ vv }}' != '')
+			{
+				verVideo('{{ vm }}','{{ vp }}','{{ um }}');
+			}
+			
+		}
+		
+		function nextLibre()
+		{
+			
+			
+			if('{{ vm }}' != '')
+			{
+				
+				verMensaje('plantilla','{{ vm }}','{{ vv }}','{{ vp }}','{{ um }}');
+			}
+			else if('{{ vv }}' != '')
+			{
+				verVideo('{{ vm }}','{{ vp }}','{{ um }}');
+			}
+			document.getElementById("imagenLibDiv").style.display="none";
+			
+		}
+		function backGrabacion(from,mensaje,video,plantilla,musica)
+		{
+			if('{{ vm }}'!="")
+			{
+				verMensaje(from,mensaje,video,plantilla,musica)
+			}
+			else if('{{ vl }}'!="")
+			{
+				verImgLibre();
+			}
+			else if('{{ vp }}'!="")
+			{
+				verPlantilla();
+			}
+			else
+			{
+				
+			}
+		}
+		function verMensaje(from,mensaje,video,plantilla,musica)
+		{
+
+
+			if(from=='plantilla' && (mensaje=="" && musica=="" ) && '{{ vl }}' =="")
+			{
+				//si no tiene plantilla ni musica y proviene de la plantilla se envia a ver video
+				
+					
+					verVideo(mensaje,plantilla,musica);
+				
+
+			}
+			else if(from=='video' && (mensaje=="" && musica=="" ) && '{{ vl }}' =="")
+			{
+				//si no tiene plantilla ni musica y proviene del video se envia a ver plantilla
+				if('{{ vp }}' != "")
+				{
+					verPlantilla();
+				}
+				else
+				{
+					verImagenInicial();
+				}
+			}
+			else
+			{
+				//si exite mensaje o musica/cancion se muestra la vista del mensaje con la cancion si existiese
+				if(from =="plantilla")
+				{
+					if('{{ vl }}' !="" && document.getElementById("imagenLibDiv").style.display =="none")
+					{
+						verImgLibre();
+					}
+					else
+					{
+						
+						if(video=="" )
+						{
+							document.getElementById("siguienteMensaje").style.display = "none";
+						}
+
+						if(musica=="")
+						{
+							document.getElementById("playerFinal").style.display = "none";
+						}
+						else
+						{
+
+							document.getElementById("playerFinal").style.display = "block";
+						}
+						document.getElementById("plantillaDiv1").style.display = "none";
+						document.getElementById("videoDiv").style.display = "none";
+						document.getElementById("imagenLibDiv").style.display="none";
+						document.getElementById("imagenInicialDiv1").style.display="none";
+						document.getElementById("mensajeFinal").innerHTML= "<h1>"+mensajeFinal+"</h1>";
+						document.getElementById("mensajeDiv").style.display = "block";
+					}
+				}
+				else
+				{
+					if(video=="" )
+					{
+						document.getElementById("siguienteMensaje").style.display = "none";
+					}
+
+					if(musica=="")
+					{
+						document.getElementById("playerFinal").style.display = "none";
+					}
+					else
+					{
+
+						document.getElementById("playerFinal").style.display = "block";
+					}
+					document.getElementById("plantillaDiv1").style.display = "none";
+					document.getElementById("videoDiv").style.display = "none";
+					document.getElementById("imagenLibDiv").style.display="none";
+					document.getElementById("imagenInicialDiv1").style.display="none";
+					document.getElementById("mensajeFinal").innerHTML= "<h1>"+mensajeFinal+"</h1>";
+					document.getElementById("mensajeDiv").style.display = "block";
+				}
+				
+			}
+			if('{{ vi }}' =="" && '{{ vp }}' =="" && '{{ vl }}' =="")
+			{
+				document.getElementById("atrasMensaje").style.display = "none";
+			}
+		}
+		
+		function verVideo(mensaje,plantilla,musica)
+		{
+			//muestra la vista del video
+			if( plantilla=="" && (mensaje=="" && musica=="" ) && '{{ vi }}'=="")
+			{
+				//si no tiene mas opciones se impide la navegabilidad
+				document.getElementById("atrasGrabacion").style.display = "none";
+			}
+
+			document.getElementById("plantillaDiv1").style.display = "none";
+			document.getElementById("mensajeDiv").style.display = "none";
+			document.getElementById("imagenLibDiv").style.display="none";
+			document.getElementById("imagenInicialDiv1").style.display="none";
+			document.getElementById("videoDiv").style.display = "block";
+		}
+		function verPlantilla()
+		{
+			//muestra la vista de la plantilla
+			if('{{ vp }}' != "")
+			{
+				document.getElementById("mensajeDiv").style.display = "none";
+				document.getElementById("videoDiv").style.display = "none";
+				document.getElementById("plantillaDiv1").style.display = "block";
+				document.getElementById("imagenLibDiv").style.display="none";
+				document.getElementById("imagenInicialDiv1").style.display="none";
+				if('{{ vv }}' =='' && '{{ vm }}' =='' && '{{ um }}' =='')
+				{
+					document.getElementById("siguientePlantilla").style.display = "none";
+				}
+			}
+			else
+			{
+				verImagenInicial();
+			}
+		}
+		function mostrarCorreo()
+		{
+			//mostrar la  opcion de correo en la vista de plantilla
+			document.getElementById('mensajeCorreo').innerHTML =""
+			document.getElementById("correoDiv").style.display = "block";
+		}
+
+    </script>
+
+</html>

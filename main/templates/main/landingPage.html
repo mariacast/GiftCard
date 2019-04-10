@@ -1,0 +1,546 @@
+
+<html>
+	{% load staticfiles %}
+	<head>
+
+		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+		<link rel ="stylesheet" href="/static/main/{{ tema }}/css/style_tem_admin.css">
+
+	</head>
+	<body>
+
+	<div id="loginDiv" >
+
+			<!--<button id="atrasLogin" onclick="grabarMensaje();"> Atras</button>-->
+			<!-- formulario de login-->
+			<div class="container">
+				<div class="card card-container">
+					<form id="loginForm" action="" method="post"> {% csrf_token %}
+						<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="logo_gift"/><br>
+						<a id="t1">LOGIN</a><br><br>
+						<input placeholder="Email" type="email" name="correoLogin" id="correoLogin"><br><br>
+						<input placeholder="Password" type="password" name="contrasenaLogin" id ="contrasenaLogin"><br><br>
+						<input type="hidden" id="qr_id_login" name="qr_id_login" value= "{{ qr_id }}"/>
+
+						<button type="button" id="b_ingresar" class="b_ingresa" onclick="loginPage();" value="Ingresar">INGRESAR</button>
+					</form>
+					<a class="et">¿Olvido la contraseña?  </a><a class="et">¿No tiene cuenta?</a><br>
+					<button type="button" class="b_recu" id="Recuperar" onclick="verRecuperacion();">RECUPERAR</button>
+					<button type="button" class="b_recu" id="Registrar" onclick="registrar();">REGISTRARSE</button>
+					<div id="mensajeLogin"> <!-- DIV PARA PINTAR MENSAJES DE ESTADOS  --></div>
+
+				</div><!-- /card-container -->
+		</div>
+
+
+			<!-- fin formulario de login-->
+
+
+		</div>
+		<div id="registroDiv" style="display:none">
+			<div class="container">
+				<div class="card card-container">
+					<button type="button" class="b_recu" id="i_atrasRegistro" onclick="login();">ATRAS</button>
+
+					<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="logo_gift_reg"/><br><br><br>
+
+					<!-- formulario de registro-->
+					<form id="registroForm" action="" method="post"> {% csrf_token %}
+
+						<h1 id="t1">REGISTRESE</h1><br>
+						<a class="etiqueta_re">Nombre Completo:</a>
+						<input type="text" name="nombre" id="nombre" required><br><br>
+
+						<a class="etiqueta_re">Correo: </a>
+						<input type="email" name="correoRegistro" id="correoRegistro" required><br><br>
+
+						<a class="etiqueta_re">Contraseña: </a>
+						<input type="password" id="contrasenaRegistro" name="contrasenaRegistro" required><br><br>
+
+						<a class="etiqueta_re">Confirme contraseña: </a>
+						<input type="password" id="confirmar"name="confirmar" required><br><br><br><br>
+
+						<button type="button" class="b_recu" id="registro" onclick="guardarRegistro();" value="Registrarse">REGISTRARSE</button>
+					</form>
+					<!-- FIN formulario de registro-->
+					<div id="mensajeRegistro"></div>
+					</div>
+				</div>
+		</div>
+		<!-- FIN vista  de LOGIN -->
+		<!-- INICIO vista cambio de contraseña, despues de haber solicitado recuperacion de contraseña  -->
+		<div id="cambioDiv" style="display:none">
+			<h1>Por favor, cambie su contraseña</h1>
+			<input type="hidden" id="correoCambio" name="correoCambio" />
+			<a id="eti_log1"> Contraseña: </a><br>
+			<input type="password" name="contrasenaCambio" id ="contrasenaCambio"><br><br>
+			<a id="eti_log1"> Confirme la contraseña: </a><br>
+			<input type="password" name="confirmacionCambio" id ="confirmacionCambio"><br><br>
+			<img src="/static/main/{{ tema }}/images/envi.png" id="env" type="button" onclick="cambiarContrasena();"/><br><br>
+			<div id="mensajeCambio">
+			</div>
+		</div>
+
+		<!-- fin vista cambio de contraseña -->
+		<!--  inicio vista recuperacion de contraseña, para enviar correo de recuperacion-->
+		<div id="recuperacionDiv" style="display:none" >
+			<div class="container">
+				<div class="card card-container">
+					<button type="button" class="b_recu" id="atrasRecuperacion" onclick="login();">ATRAS</button>
+
+					<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="logo_gift_reg"/><br><br><br><br>
+
+					<h3>Ingresa el correo del cual deseas recuperar la contraseña, se enviara un correo con la misma.</h3>
+					<!-- formulario de recuperar contraseña-->
+					<div id="recuperarForm"  >
+
+						Correo: <input type="email" name="correoRecuperacion" id="correoRecuperacion"><br><br>
+
+
+							<button type="button" class="b_recu" id="brecuperar" type="button" onclick="recuperarContrasena();" value="Recuperar">RECUPERAR</button>
+					</div>
+					<div id="mensajeRecuperacion"></div>
+			<!-- fin formulario de recuperar contraseña-->
+			</div>
+			</div>
+		</div>
+		<div id="pie">
+			<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+		</div>
+	</body>
+	<script type="text/javascript">
+	function loginPage()
+			{
+
+				if(document.getElementById("correoLogin").value=="")
+				{
+					document.getElementById("mensajeLogin").innerHTML= "";
+					document.getElementById("mensajeLogin").innerHTML= "El campo Correo no puede ser vacio";
+				}
+				else if(document.getElementById("contrasenaLogin").value=="")
+				{
+					document.getElementById("mensajeLogin").innerHTML= "";
+					document.getElementById("mensajeLogin").innerHTML= "El campo Contrasena no puede ser vacio";
+				}
+				else
+				{
+					expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+					if ( !expr.test(document.getElementById("correoLogin").value) )
+					{
+						document.getElementById("mensajeLogin").innerHTML= "";
+						document.getElementById("mensajeLogin").innerHTML= "El campo Correo debe tener ser una direccion de electronico correcta";
+
+					}
+					else
+					{
+
+							correoLogin = document.getElementById("correoLogin").value;
+							contrasenaLogin =document.getElementById("contrasenaLogin").value;
+							qr_id =document.getElementById("qr_id_login").value;
+							conectarLogin(qr_id,correoLogin,contrasenaLogin); //ajax login
+
+					}
+				}
+			}
+			//ajax login
+			function conectarLogin(qr_id, correoLogin, contrasenaLogin)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaLogin;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/loginPage/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("correoLogin="+correoLogin+"&contrasenaLogin="+contrasenaLogin);
+
+			}
+
+
+			function respuestaLogin()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+						mensaje = JSON.parse(mensaje);
+
+
+						if(mensaje[0]==1)
+						{
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Correo no registrado";
+						}
+						else if(mensaje[0]==2)
+						{
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Contrasena incorrecta";
+						}
+						else if(mensaje[0]==3)
+						{
+
+
+							location.href="/main/adminPage/";
+
+
+
+						}
+						else if(mensaje[0]==4)
+						{
+							//si se solicito recuperacion de contraseña va a la vista de cambiar la contraseña
+							document.getElementById("correoCambio").value= mensaje[1];
+							verCambio();
+
+
+						}
+
+					}
+				}
+			}
+
+			function verCambio()
+			{
+				//se muestra la vista de cambiar la contraseña
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+
+				document.getElementById("cambioDiv").style.display = "block";
+				document.getElementById("contrasenaCambio").value = "";
+				document.getElementById("confirmarCambio").value = "";
+
+			}
+
+			function login()
+			{
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "block";
+				document.getElementById("recuperacionDiv").style.display = "none";
+				document.getElementById("correoLogin").value = "";
+				document.getElementById("contrasenaLogin").value = "";
+
+
+			}
+			function registrar()
+			{
+				//muestra vista de registrar
+
+
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("cambioDiv").style.display = "none";
+				document.getElementById("registroDiv").style.display = "block";
+				document.getElementById("nombre").value = "";
+				document.getElementById("correoRegistro").value = "";
+				document.getElementById("contrasenaRegistro").value = "";
+				document.getElementById("confirmar").value = "";
+			}
+			function verRecuperacion()
+			{
+
+				//se muestra la vista de recuperacion de contraseña
+				document.getElementById("registroDiv").style.display = "none";
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("recuperacionDiv").style.display = "block";
+				document.getElementById("correoRecuperacion").value = "";
+
+
+
+			}
+
+			function guardarRegistro()
+			{
+
+				//validar los datos para enviar el registro de un nuevo usuario
+				if(document.getElementById("nombre").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Nombre no puede ser vacio";
+				}
+				else if(document.getElementById("correoRegistro").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Correo no puede ser vacio";
+				}
+				else if(document.getElementById("contrasenaRegistro").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Contrasena no puede ser vacio";
+				}
+				else if(document.getElementById("confirmar").value=="")
+				{
+					document.getElementById("mensajeRegistro").innerHTML= "";
+					document.getElementById("mensajeRegistro").innerHTML= "El campo Confirmar no puede ser vacio";
+				}
+				else{
+					contrasena = document.getElementById("contrasenaRegistro").value;
+					confirmar = document.getElementById("confirmar").value;
+					expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+					if ( !expr.test(document.getElementById("correoRegistro").value) )
+					{
+						document.getElementById("mensajeRegistro").innerHTML= "";
+						document.getElementById("mensajeRegistro").innerHTML= "El campo Correo debe tener ser una direccion de electronico correcta";
+
+					}
+					else
+					{
+						if(contrasena==confirmar)
+						{
+							nombre = document.getElementById("nombre").value;
+							correoRegistro = document.getElementById("correoRegistro").value;
+							contrasenaRegistro =document.getElementById("contrasenaRegistro").value;
+
+							conectarRegistro(nombre, correoRegistro, contrasenaRegistro);  //ajax para guardar registro
+						}else{
+							document.getElementById("mensajeRegistro").innerHTML= "";
+							document.getElementById("mensajeRegistro").innerHTML= "Las contraseñas son diferentes";
+						}
+					}
+				}
+			}
+
+			function conectarRegistro(nombre, correoRegistro, contrasenaRegistro)
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaRegistro;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/guardarRegistro/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("nombre="+nombre+"&correoRegistro="+correoRegistro+"&contrasenaRegistro="+contrasenaRegistro);
+
+			}
+
+
+			function respuestaRegistro()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+						if(mensaje==1)
+						{
+							login()
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Registro Exitoso, Inicia sesion.";
+						}
+						else if(mensaje==2)
+						{
+							document.getElementById("mensajeRegistro").innerHTML= "";
+							document.getElementById("mensajeRegistro").innerHTML= "El correo ya se encuentra registrado.";
+						}
+
+
+					}
+				}
+			}
+
+			function recuperarContrasena()
+			{
+				document.getElementById("mensajeRecuperacion").innerHTML= "<h3>Cargando..</h3>";
+				document.getElementById("brecuperar").onclick = false;
+				ajaxRecuperacion();
+			}
+
+
+
+			function ajaxRecuperacion()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaRecuperacion;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/recuperarCorreo/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("correoRecuperacion="+document.getElementById("correoRecuperacion").value);
+
+			}
+
+
+			function respuestaRecuperacion()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje)
+						{
+							if(mensaje== 1)
+							{
+								men = "Error al enviar correo, intentalo de nuevo";
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= men;
+							}
+
+							else if(mensaje==3)
+							{
+								men = "Error al enviar correo, intentalo de nuevo";
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= men;
+							}
+							else if(mensaje==4)
+							{
+								men = "Correo no Registrado";
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= men;
+								document.getElementById("brecuperar").onclick = recuperarContrasena;
+							}
+							else if(mensaje== 2)
+							{
+								login();
+								men = "Se ha enviado la contrasena a tu correo";
+								document.getElementById("mensajeLogin").innerHTML= "";
+								document.getElementById("mensajeLogin").innerHTML= men;
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("brecuperar").onclick = recuperarContrasena;
+							}
+							else
+							{
+								document.getElementById("mensajeRecuperacion").innerHTML= "";
+								document.getElementById("mensajeRecuperacion").innerHTML= "Intenta de nuevo";
+								document.getElementById("brecuperar").onclick = recuperarContrasena;
+							}
+						}
+
+					}
+				}
+			}
+
+			function cambiarContrasena()
+			{
+
+				if(document.getElementById("contrasenaCambio").value == document.getElementById("confirmacionCambio").value)
+				{
+					ajaxCambio();
+				}
+				else
+				{
+					document.getElementById("mensajeCambio").innerHTML= "Contrasenas distintas, intentalo de nuevo";
+				}
+			}
+
+
+			//ajax par cambiar las contraseñas
+			function ajaxCambio()
+			{
+			  // Obtener la instancia del objeto XMLHttpRequest
+
+			  if(window.XMLHttpRequest)
+			  {
+				conexion = new XMLHttpRequest();
+			  }
+			  else if(window.ActiveXObject)
+			  {
+				conexion = new ActiveXObject("Microsoft.XMLHTTP");
+			  }
+
+			  //var comentarios=encodeURIComponent(categoria);
+
+			  // Preparar la funcion de respuesta
+			  conexion.onreadystatechange = respuestaCambio;
+
+			  // Realizar peticion HTTP
+			  conexion.open('POST', '/main/cambiarContrasena/');
+			  conexion.setRequestHeader("Content-Type", "application/x-www-form-urlencoded" );
+			  conexion.setRequestHeader('X-CSRFToken', csrfcookie());
+			  conexion.send("contrasenaCambio="+document.getElementById("contrasenaCambio").value+"&correoCambio="+document.getElementById("correoCambio").value);
+
+			}
+
+
+			function respuestaCambio()
+			{
+				if(conexion.readyState == 4)
+				{
+					if(conexion.status == 200)
+					{
+
+						mensaje = conexion.responseText;
+
+						if(mensaje==1)
+						{
+
+							document.getElementById("mensajeLogin").innerHTML= "";
+							document.getElementById("mensajeLogin").innerHTML= "Cambio de contraseña exitoso";
+							location.href="/main/adminPage/";
+						}
+						else
+						{
+							document.getElementById("mensajeCambio").innerHTML= "Error al guardar la contraseña nueva";
+						}
+
+					}
+				}
+			}
+
+			var csrfcookie = function()
+			{
+				//funcion que opcione el token de django
+				var cookieValue = null,
+					name = 'csrftoken';
+				if (document.cookie && document.cookie !== '')
+				{
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++)
+					{
+						var cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) == (name + '='))
+						{
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			};
+
+	</script>
+
+
+</html>

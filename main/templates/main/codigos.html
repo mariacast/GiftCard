@@ -1,0 +1,70 @@
+{% extends 'main/base.html' %}
+
+{% block body %}
+		<a href="{% url 'main:index' %}"><img src="/static/main/{{ tema }}/images/atras11.png" width="7%" height="6%"/></a>
+		<!-- tabla de los codigos petenecientes al lote-->
+		<a id="titulo">CODIGOS QR DEL LOTE {{ lote }}</a>
+		<table id="tabla" class="table table-hover">
+		<thead>
+			<tr>
+				<!-- titulos -->
+				<th>CODIGO QR</th>
+				<th>FECHA DE MODIFICACION</th>
+				<th>ESTADO</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for codigo in codigos %}
+			<!--ciclo de pinta los codigos qr -->
+
+			<tr>
+				<td id="cod">{{ codigo.id }}</td>
+				<!-- validaciones para convertir el numero de estado en su descripcion-->
+				{% if codigo.fecha_modificacion == None %}
+					<td>Sin Modificar</td>
+				{% endif %}
+
+				{% if codigo.fecha_modificacion != None %}
+					<td>{{ codigo.fecha_modificacion }}</td>
+				{% endif %}
+
+				{% if codigo.estado == "0" %}
+					<td>Creado, sin usar</td>
+				{% endif %}
+
+				{% if codigo.estado == "1" %}
+					<td>Comprado y Cargado</td>
+				{% endif %}
+
+				{% if codigo.estado == "2" %}
+					<td>Visto</td>
+				{% endif %}
+				{% if codigo.estado == "3" %}
+					<td>Expirado</td>
+				{% endif %}
+				{% if codigo.estado == "4" %}
+					<td>Usado para Extender</td>
+				{% endif %}
+				{% if codigo.estado == "5" %}
+					<td>Elimado</td>
+				{% endif %}
+			</tr>
+
+		{% endfor %}
+		</tbody>
+		</table><br>
+
+		<div id="bts">
+			<a href="{% url 'main:descargar' lote %}"><button type="button" class="b_descarga">Descargar</button></a><!-- descarga archivo comprimido-->
+			<a href="{% url 'main:listCodigos' lote %}"><button type="button" class="b_lista">Lista De Codigos</button></a> <!-- descarga excel -->
+
+		</div>
+
+
+
+
+	<div id="pie">
+		<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+	</div>
+
+{% endblock %}

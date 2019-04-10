@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+	<link rel ="stylesheet" href="/static/main/{{ tema }}/css/style_admin.css">
+	<link rel ="stylesheet" href="/static/main/admin/css/bootstrap.css">
+	{% if css %}
+		<link rel ="stylesheet" href="/static/main/{{ tema }}/css/{{ css }}.css">
+	{% endif %}
+</head>
+
+<body>
+	<!--verifica si el usuario esta logeado para poder ingresar al template -->
+	{% if user.is_authenticated or request.session.username %}
+		<div class="menu-vertical">
+				<div class="user-panel">
+					<div class="pull-left image">
+						<img src="/static/main/admin/images/User_Circle.png" class="img-circle" alt="User Image">
+					</div>
+					<div class="pull-left info">
+						<p>GIFT CARD IT</p>
+					</div>
+				</div>
+				<ul>
+					{% if user.is_authenticated %}
+							<li><a  id="nuevo" href="{% url 'main:index' %}">INICIO</a></li>
+							<li><a  id="nuevo" href="{% url 'main:generar' %}">NUEVO LOTE</a></li>
+							<li><a id="categoria" href="{% url 'main:ingresarCategoria' %}">CATEGORIA</a></li>
+							<li><a id="ingresar" href="{% url 'main:ingresarPlantilla' %}">PLANTILLA</a></li>
+							<li><a id="ingresarImg" href="{% url 'main:ingresarImagen' %}">IMAGEN INICIAL</a></li>
+							<li><a id="ingresarMarco" href="{% url 'main:ingresarMarco' %}">MARCO</a></li>
+							<li><a id="frase" href="{% url 'main:ingresarFrase' %}">FRASES</a></li>
+							<li><a id="reportes" href="{% url 'main:reportes' %}">REPORTES</a></li>
+							<li><a id="codigovende" href="{% url 'main:asignarVendedor' %}">ASIGNAR CODIGOS VENDEDORES</a></li>
+							<li><a id="vendedores" href="{% url 'main:vendedor' %}">VENDEDORES</a></li>
+							<li><a id="usuarios" href="{% url 'main:usuario' %}">USUARIOS</a></li>
+
+
+
+					{% else %}
+						<li><a  id="nuevo" href="{% url 'main:index' %}">INICIO</a></li>
+						<li><a id="reportes" href="{% url 'main:reportesVendedor' %}">REPORTES</a></li>
+						<li><a id="usuariosVendedor" href="{% url 'main:usuariosVendedor' %}">USUARIOS</a></li>
+
+					{% endif %}
+					<li><a id="salir" href="{% url 'main:salir' %}">SALIR</a></li>
+					<li><img src ="/static/main/admin/images/logo_principal.png" width="160px" height="95px"/></li>
+				</ul>
+
+		</div>
+		{% block body %}
+		{% endblock %}
+
+	{% else %}
+		<div id="mostrar">
+			<a id="msj">Debes Iniciar Sesion con tu usuario y contraseña para continuar</a><br><br><br>
+			<a id="iniciar" href="{% url 'main:login' %}"><button type="button" class="b_ini" >INICIAR SESION</button></a>
+
+		</div>
+		<div id="logo_prin">
+			<img src ="/static/main/{{ tema }}/images/logo_principal.png" id="lo" />
+		</div>
+	{% endif %}
+	<div id="pie">
+		<a id="power">Powered By: </a><a href="http://www.itclatam.com"><img id="itc" src="/static/main/{{ tema }}/images/logoit.png" /></a>
+	</div>
+</body>
+
+<style type="text/css">
+#Categoria1
+{
+
+		cursor:pointer;
+}
+#itc
+{
+		vertical-align:text-top;
+		cursor:pointer;
+		width: 15%;
+		font-weight: bold;
+}
+#pie{
+		position: fixed;
+		width:100%;
+		text-align: right;
+		bottom:0px;
+		font-weight: bold;
+
+		}
+
+#logo_prin,
+#mostrar
+{
+	font-size:25px;
+	padding-top:10%;
+	text-align:center;
+}
+#lo
+{
+	width: 450px;
+	height: 320px;
+
+
+}#t2,
+	#ti{
+		font-size: 1em;
+	}
+	#tabs{
+			width: 83%;
+			max-height: 400px;
+			overflow: auto;
+	}
+	.b_ini{
+		border-radius: 8px;
+		background-color: #337ab7;
+		border-color: #2e6da4;
+	font-weight: bold;
+	color:#FFF;
+	width:210px;
+	height:55px;
+	font-size: .8em;
+	cursor: pointer;
+	}
+	.b_ini:hover{
+		background-color: #286090;
+		border-color: #204d74;
+	}
+
+</style>
+</html>

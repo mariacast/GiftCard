@@ -1,0 +1,62 @@
+<html>	
+	<head>
+	</head>
+	<body onload="validarOS('{{ qr_id }}','{{ qr_hash }}');">
+		
+	</body>
+	<script type="text/javascript">
+		function validarOS(qr_id, qr_hash)
+		{
+			
+			var OSName="Unknown OS";
+			var codigo= qr_id;
+			var hash = qr_hash;
+			if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
+			if (navigator.appVersion.indexOf("Mac")!=-1) OSName="MacOS";
+			if (navigator.appVersion.indexOf("X11")!=-1) OSName="UNIX";
+			if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
+			if(OSName=="MacOS")
+			{
+				
+				location.href="/main/multimediaiOS/?id="+codigo+"&hash="+hash;
+			}
+			else
+			{
+				
+				var navInfo = window.navigator.appVersion.toLowerCase();
+				var so = 'Sistema Operativo';
+
+
+				if(navInfo.indexOf('win') != -1)
+				{
+					so = 'Windows';
+				}
+				else if(navInfo.indexOf('linux') != -1)
+				{
+					so = 'Linux';
+				}
+				else if(navInfo.indexOf('mac') != -1)
+				{
+					so = 'Mac';
+				}
+				
+				if(so=='Mac')
+				{
+					location.href="/main/multimediaiOS/?id="+codigo+"&hash="+hash;
+				}
+				else
+				{
+					
+					if(navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod')
+					{ 
+						location.href="/main/multimediaiOS/?id="+codigo+"&hash="+hash;
+					}
+					else	
+					{
+						location.href="/main/multimediaRTC/?id="+codigo+"&hash="+hash;
+					}
+				}
+			}
+		}
+	</script>
+</html>

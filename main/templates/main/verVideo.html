@@ -1,0 +1,212 @@
+
+<html>
+	{% load staticfiles %}
+	<head>
+		
+		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+		
+		<h2 id="titulo">OBSERVA EL VIDEO QUE TE HAN GRABADO</h2>
+	</head>
+	
+		<body>
+			<video id="recorded" controls=""  src="{{ src }}" ></video>
+		</br>
+		
+		
+		<a href="http://twitter.com/share?url={{ url }}{{ code }}/{{ hash }}{{ page_url }}&amp;text={{ title }}" target="_blank" title="{{ share_txt }} {{ service }}">
+			<img id="twitter"  src="/static/main/images/twitter.png" alt="{{ share_txt }} {{ service }}"/>
+		</a>
+
+		<a href="http://www.facebook.com/share.php?u={{ url }}{{ code }}/{{ hash }}{{ page_url }}&amp;t={{ title }}" target="_blank" title="{{ share_txt }} {{ service }}">
+			<img id="face" width="5%" height="10%"src="/static/main/images/facebook.jpeg" alt="{{ share_txt }} {{ service }}"/>
+		</a>
+
+		<a onclick="mostrarCorreo();" >
+			<img id = "correo" width="5%" height="5%"  src="/static/main/images/correo.png" alt="{{ share_txt }} {{ service }}"/>
+		</a>
+
+		
+		<div style="display:none" id="correoDiv">
+		<form action="{% url 'main:send_mail'  %}" method="post" id="destino">{% csrf_token %}
+			<input name="datos" type= "hidden"  value= {{datos}}>
+			Direccion destino<input type="text" name="correoDestino">
+			<input type="submit" value="Correo">
+		</form>
+
+    </body>
+    <script type="text/javascript">
+		function mostrarCorreo()
+		{
+			document.getElementById("correoDiv").style.display = "block"
+		}
+    </script>
+    
+    <style type="text/css">
+		@media (min-width: 1024px) and (max-width: 1370px) 	
+		{  
+						 
+			 #titulo
+			 {
+				 position: absolute; 
+				 top:  0.5%; 
+				 left: 30%; 
+				 
+			 }
+			 		 
+			 #recorded
+			 {
+				 position: absolute; 
+				 top:  10%; 
+				 left: 29%; 
+				 width:40%;
+				 height:68%;
+			 }
+			 
+			 #twitter
+			 {
+				 position: absolute; 
+				 top:  80%; 
+				 left: 40%; 
+				 width:5%;
+				 height:10%;
+			 }
+			  
+			 #face
+			 {
+				 position: absolute; 
+				 top:  80%; 
+				 left: 46%; 
+				 width:5%;
+				 height:10%;
+			 }
+			
+			 #correo
+			 {
+				 position: absolute; 
+				 top:  80%; 
+				 left: 52%; 
+				 width:5%;
+				 height:10%;
+			 }
+			 
+			 #destino
+			 {
+				 position: absolute; 
+				 top:  93%; 
+				 left: 34%; 
+				
+			 }
+		
+		}
+ 
+
+		@media (min-width: 481px) and (max-width: 1023px) 
+		{
+			#titulo
+			{
+				 position: absolute; 
+				 top:  0.5%; 
+				 left: 25%; 
+				 font-size: 14px;
+				 
+			 }
+			 		 
+			 #recorded
+			 {
+				 position: absolute; 
+				 top:  12%; 
+				 left: 31%; 
+				 width:40%;
+				 height:60%;
+			 }
+			 
+			#twitter
+			{
+				 position: absolute; 
+				 top:  75%; 
+				 left: 40%; 
+				 width: 6%; 
+				 height: 10%;
+			}
+			#face
+			{
+				 position: absolute; 
+				 top:  75%; 
+				 left: 47%; 
+				 width: 6%; 
+				 height: 10%;
+			}
+			#correo
+			{
+				 position: absolute; 
+				 top:  75%; 
+				 left: 54%; 
+				 width: 6%; 
+				 height: 10%;
+			}
+			#destino
+			{
+				 position: absolute; 
+				 top:  90%; 
+				 left: 20%; 
+				
+			}
+		
+		}
+ 
+		@media (min-width: 100px) and (max-width: 480px) 
+		{ 
+			#titulo
+			{
+				 position: absolute; 
+				 top:  5%; 
+				 left: 7%; 
+				 font-size: 14px;
+				 
+			 }
+			 		 
+			 #recorded
+			 {
+				 position: absolute; 
+				 top:  7%; 
+				 left: 25%; 
+				 width:50%;
+				 height:60%;
+			 }
+			 
+			#twitter
+			{
+				 position: absolute; 
+				 top:  70%; 
+				 left: 35%; 
+				 width: 8%; 
+				 height: 7%;
+			}
+			#face
+			{
+				 position: absolute; 
+				 top:  70%; 
+				 left: 45%; 
+				 width: 8%; 
+				 height: 7%;
+			}
+			#correo
+			{
+				 position: absolute; 
+				 top:  70%; 
+				 left: 55%; 
+				 width: 8%; 
+				 height: 7%;
+			}
+			#destino
+			{
+				 position: absolute; 
+				 top:  80%; 
+				 left: 15%; 
+				
+			}
+		}
+   
+    </style>
+   	   	
+</html>
