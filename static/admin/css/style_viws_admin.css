@@ -1,0 +1,174 @@
+@font-face{
+    font-family: "curz";
+    src: url(/static/main/admin/fonts/CURLZ___.TTF) format("truetype");
+
+}
+@font-face{
+    font-family: "comic";
+    src: url(/static/main/admin/fonts/comic.ttf) format("truetype");
+
+}
+
+
+body {
+    font-family: 'Courgette', cursive;
+    background-image: url(/static/main/admin/images/fongris.jpg);
+    background-size: cover;
+    color: white;
+    text-align: center;
+    font-size: 2em;
+
+
+}
+
+
+
+/* posiciones para pantalla mayo a 1024 px*/
+
+@media (min-width: 1024px)
+
+{
+
+  #lo{
+    width: 500px;
+    height: 310px;
+  }
+  #itc
+  {
+      vertical-align:text-top;
+      cursor:pointer;
+      width: 15%;
+  }
+  #pie
+  {
+      position: fixed;
+      width:100%;
+      text-align: left;
+      bottom:0px;
+      z-index:-1;
+  }
+  .b_ini{
+    border-radius: 8px;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+  font-weight: bold;
+  color:#FFF;
+  width:150px;
+  height:55px;
+  font-size: .5em;
+  cursor: pointer;
+  }
+  .b_ini:hover{
+    background-color: #286090;
+    border-color: #204d74;
+  }
+   #inicia
+   {
+        width:95px;
+        height:40px;
+    }
+
+}
+
+@media (min-width: 481px) and (max-width: 1023px)
+{
+  #lo{
+    width: 400px;
+    height: 290px;
+  }
+  #itc
+  {
+      vertical-align:text-bottom;
+      cursor:pointer;
+      width: 25%;
+  }
+  #power
+  {
+      color: white;
+      font-size:.6em;
+  }
+
+  #pie{
+
+      position: fixed;
+      width:100%;
+      text-align: left;
+      bottom:0px;
+      z-index:-1;
+      }
+
+  .b_ini{
+    border-radius: 8px;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+  font-weight: bold;
+  color:#FFF;
+  width:120px;
+  height:48px;
+  font-size: .5em;
+  cursor: pointer;
+  }
+  .b_ini:hover{
+    background-color: #286090;
+    border-color: #204d74;
+  }
+    h3
+    {
+        font-size:3em;
+    }
+
+
+}
+
+
+/* posiciones para pantalla entre 100 y  480 px*/
+
+@media (min-width: 100px) and (max-width: 480px)
+{
+  #lo{
+    width: 200px;
+    height: 190px;
+  }
+
+  #itc
+  {
+      vertical-align:text-bottom;
+      cursor:pointer;
+      width: 25%;
+  }
+  #power
+  {
+      font-size:.6em;
+      color: white;
+  }
+
+  #pie{
+
+      position: fixed;
+      width:100%;
+      text-align: left;
+      bottom:0px;
+      z-index:-1;
+      }
+
+  .b_ini{
+    border-radius: 8px;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+  font-weight: bold;
+  color:#FFF;
+  width:150px;
+  height:90px;
+  font-size: .8em;
+  cursor: pointer;
+  }
+  .b_ini:hover{
+    background-color: #286090;
+    border-color: #204d74;
+  }
+     h3
+    {
+        font-size:3em;
+    }
+
+}
