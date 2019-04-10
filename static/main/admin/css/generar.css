@@ -1,0 +1,380 @@
+.modal
+	{
+		display: none; /* Hidden by default */
+		position: fixed; /* Stay in place */
+		z-index: 1; /* Sit on top */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */
+		height: 100%; /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgb(0,0,0); /* Fallback color */
+		background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+
+
+	/* Modal Content/Box */
+	.modal-content
+	{
+		width: 1000px;
+		padding: 40px 40px;
+		background-color: #F7F7F7;
+		/* just in case there no content*/
+		padding: 20px 25px 30px;
+		margin: 0 auto 25px;
+		margin-top: 10px;
+		border: 1px solid #999;
+		border: 1px solid rgba(0,0,0,.2);
+		border-radius: 15px;
+		outline: 0;
+		-webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+		box-shadow: 0 3px 9px rgba(0,0,0,.5);
+		text-align: center;
+		font-weight: bold;
+		height: 580px;
+
+	}
+	#tImagenes{
+		width: 100%;
+		
+	}
+
+	/* The Close Button */
+	.close3,
+	.close2
+	{
+		color: #000;
+		text-shadow: 0 1px 0 #fff;
+		filter: alpha(opacity=20);
+		opacity: .2;
+		float: right;
+		font-size: 40px;
+		font-weight: bold;
+		position: absolute;
+		left: 80%;
+	}
+
+	.close
+	{
+		color: #000;
+		text-shadow: 0 1px 0 #fff;
+		filter: alpha(opacity=20);
+		opacity: .2;
+		float: right;
+		font-size: 40px;
+		font-weight: bold;
+		position: absolute;
+		left: 85%;
+	}
+	.imgClass
+	{
+		width: 200px;
+		height: 200px;
+		cursor: pointer;
+
+	}
+	#tablaDiv
+	{
+		width: 100%;
+		overflow: auto;
+		overflow-y: hidden;
+	}
+
+	#celdaTemas
+	{
+		text-align:center;
+		border: 3px solid #9C070E;
+
+
+	}
+	#temasDiv{
+
+		width: 70%;
+		height: 200px;
+		overflow: auto;
+		overflow-x: hidden;
+
+	}
+	#tablaMarcos,
+	#tablaCate,
+	#tablaImagenes,
+	#tablaTemas
+	{
+		width: 100%;
+		border: 2px solid #ddd;
+
+
+	}
+	table>thead{
+		border: 5px solid #CCC8C8;
+		background: #D8D8D8;
+		color: #045FB4;
+	}
+	table>tbody{
+		font-weight: normal;
+		border: 5px solid #CCC8C8;
+		color: #23527c;
+
+	}
+	.table>tbody>tr>td:hover{
+			background-color: #E6E6E6;
+	}
+
+	.table>tbody>tr>td{
+		border-top: 1px solid #fff;
+	}
+
+	.b_generar{
+		border-radius: 8px;
+		background-color: #337ab7;
+		border-color: #2e6da4;
+		font-weight: bold;
+		color:#FFF;
+		width:120px;
+		height:40px;
+	}
+	.b_generar:hover{
+		background-color: #286090;
+		border-color: #204d74;
+	}
+
+	#temaGrande
+	{
+		display: none;
+		position: fixed;
+		top: 5%; /* 15% from the top and centered */
+		margin-left: 20%;
+		height: 600px;
+		padding:7%;
+		width:800px; /* Could be more or less, depending on screen size */
+		cursor: pointer;
+
+	}
+	#nombreMarco,
+	#nombreImagen,
+	#nombreTema{
+		color: #337ab7;
+		font-weight: bold;
+
+	}
+	.close2:hover,
+	.close3:hover,
+	.close:hover,
+	.close:focus
+	{
+		color: #000;
+		text-decoration: none;
+		cursor: pointer;
+		filter: alpha(opacity=50);
+		opacity: .5;
+
+	}
+
+			#listaDiv{
+					display: none;
+				}
+				#listaImagenesDiv{
+
+					width: 83%;
+					height: 200px;
+					overflow: auto;
+					overflow-x: hidden;
+
+
+				}
+				#celdaImagen
+				{
+					text-align:center;
+					border: 3px solid #9C070E;
+
+
+				}
+
+
+				#marcoDiv{
+					display: none;
+				}
+				#listaMarcosDiv{
+
+					width: 83%;
+					height: 200px;
+					overflow: auto;
+					overflow-x: hidden;
+
+
+				}
+				#imagenMarco,
+				#imagenModal
+				{
+
+					margin-left:26%;
+					height: 320px;
+					width: 450px; /* Could be more or less, depending on screen size */
+					margin-top: 5%;
+
+				}
+
+				.modal2
+				{
+					display: none; /* Hidden by default */
+					position: fixed; /* Stay in place */
+					z-index: 1; /* Sit on top */
+					left: 0;
+					top: 0;
+					width: 100%; /* Full width */
+					height: 100%; /* Full height */
+					overflow: auto; /* Enable scroll if needed */
+					background-color: rgb(0,0,0); /* Fallback color */
+					background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
+				}
+
+
+				/* Modal Content/Box */
+				.modal-content2
+				{
+					width: 1000px;
+					padding: 40px 40px;
+					background-color: #F7F7F7;
+					/* just in case there no content*/
+					padding: 20px 25px 30px;
+					margin: 0 auto 25px;
+					margin-top: 10px;
+					border: 1px solid #999;
+					border: 1px solid rgba(0,0,0,.2);
+					border-radius: 15px;
+					outline: 0;
+					-webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+					box-shadow: 0 3px 9px rgba(0,0,0,.5);
+					text-align: center;
+					font-weight: bold;
+					height: 500px;
+					text-align: center;
+				}
+
+				.modal3
+				{
+					display: none; /* Hidden by default */
+					position: fixed; /* Stay in place */
+					z-index: 1; /* Sit on top */
+					left: 0;
+					top: 0;
+					width: 100%; /* Full width */
+					height: 100%; /* Full height */
+					overflow: auto; /* Enable scroll if needed */
+					background-color: rgb(0,0,0); /* Fallback color */
+					background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+				}
+
+
+				/* Modal Content/Box */
+				.modal-content3
+				{
+					width: 1000px;
+					padding: 40px 40px;
+					background-color: #F7F7F7;
+					/* just in case there no content*/
+					padding: 20px 25px 30px;
+					margin: 0 auto 25px;
+					margin-top: 10px;
+					border: 1px solid #999;
+					border: 1px solid rgba(0,0,0,.2);
+					border-radius: 15px;
+					outline: 0;
+					-webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+					box-shadow: 0 3px 9px rgba(0,0,0,.5);
+					text-align: center;
+					font-weight: bold;
+					height: 500px;
+					text-align: center;
+				}
+				#logo{
+				width: 20%;
+				height:18%;
+				float:right;
+				}
+				#titulo
+				{
+
+					 font-size: 25px;
+
+				}
+				.card {
+		        background-color: #F7F7F7;
+		        /* just in case there no content*/
+		        padding: 20px 25px 30px;
+		        margin: 0 auto 25px;
+		        margin-top: 10px;
+		        /* shadows and rounded borders */
+		        -moz-border-radius: 2px;
+		        -webkit-border-radius: 2px;
+		        border-radius: 2px;
+		        -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+		        -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+		        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+						text-align: center;
+						font-weight: bold;
+						margin-left: 35%;
+		    }
+		    .card-container.card {
+		        max-width: 500px;
+		        padding: 40px 40px;
+		    }
+
+				#formulario a{
+					float:left;
+
+				}
+
+				#men{
+					margin-left:13%;
+				}
+				#op{
+					float:left;
+					margin-left:30%;
+
+				}
+				#check{
+					float:right;
+					margin-right:30%;
+				}
+				#cantidad,
+				#lote,
+				#dias
+				{
+					font-family: "comic";
+					text-align:center;
+					float:right;
+					margin-right:5%;
+					border: 1px solid #DBE1EB;
+					padding-bottom: 5px;
+					border-radius: 4px;
+					-moz-border-radius: 4px;
+					-webkit-border-radius: 4px;
+					-o-border-radius: 4px;
+					background: #FFFFFF;
+					background: linear-gradient(left, #FFFFFF, #F7F9FA);
+					background: -moz-linear-gradient(left, #FFFFFF, #F7F9FA);
+					background: -webkit-linear-gradient(left, #FFFFFF, #F7F9FA);
+					background: -o-linear-gradient(left, #FFFFFF, #F7F9FA);
+					color: #2E3133;
+				}
+				#mensajeGenerar
+				{
+					text-align:center;
+					font-size:25px;
+				}
+				#cateDiv{
+
+					width: 83%;
+					height: 200px;
+					overflow: auto;
+					overflow-x: hidden;
+
+				}
+				#tablaCate
+				{
+					cursor: pointer;
+					width: 100%;
+					color: black;
+				}

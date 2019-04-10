@@ -1,0 +1,122 @@
+@media (min-width: 1024px) {
+			 
+			 #titulo{
+				 position: absolute; 
+				 top:  0.5%; 
+				 left: 31%; 
+				 
+			 }
+			 
+			 
+			 #detalle{
+				 position: absolute; 
+				 top:  12%; 
+				 left: 48%; 
+				 
+			 }
+			 
+			 #recorded{
+				 position: absolute; 
+				 top:  10%; 
+				 left: 29%; 
+				 width:40%;
+				 height:68%;
+			 }
+			 	 
+			 #iframe{
+				 position: absolute; 
+				 top:  20%; 
+				 left: 32%; 
+				 width:35%;
+				 height:60%;
+			 }
+			 
+			 #twitter{
+				 position: absolute; 
+				 top:  82%; 
+				 left: 40%; 
+				 width:5%;
+				 height:10%;
+			 }
+			  
+			 #face{
+				 position: absolute; 
+				 top:  82%; 
+				 left: 46%; 
+				 width:5%;
+				 height:10%;
+			 }
+			
+			 #correo{
+				 position: absolute; 
+				 top:  82%; 
+				 left: 52%; 
+				 width:5%;
+				 height:10%;
+			 }
+			 #destino{
+				 position: absolute; 
+				 top:  95%; 
+				 left: 34%; 
+				
+			 }
+			
+		}
+		@media (min-width: 600px ) and (max-width: 1023px) {
+			#titulo{
+				 position: absolute; 
+				 top:  0.5%; 
+				 left: 20%; 
+				 
+			 }
+			 
+			 #detalle{
+				 position: absolute; 
+				 top:  12%; 
+				 left: 45%; 
+				 
+			 }
+			 
+			 #recorded{
+				 position: absolute; 
+				 top:  20%; 
+				 left: 30%; 
+				 width:40%;
+				 height:50%;
+			 }		 
+			 #iframe{
+				 position: absolute; 
+				 top:  20%; 
+				 left: 25%; 
+				 width:50%;
+				 height:40%;
+			 }
+			 
+			#twitter{
+				 position: absolute; 
+				 top:  75%; 
+				 left: 40%; 
+				 width: 6%; 
+				 height: 5%;
+			 }
+			 #face{
+				 position: absolute; 
+				 top:  75%; 
+				 left: 47%; 
+				 width: 6%; 
+				 height: 5%;
+			 }
+			 #correo{
+				 position: absolute; 
+				 top:  75%; 
+				 left: 54%; 
+				 width: 6%; 
+				 height: 5%;
+			 }
+			 #destino{
+				 position: absolute; 
+				 top:  85%; 
+				 left: 30%; 
+				
+			 }
+		}

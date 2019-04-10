@@ -1,0 +1,314 @@
+@font-face{
+    font-family: "curz";
+    src: url(/static/main/admin/fonts/CURLZ___.TTF) format("truetype");
+
+}
+@font-face{
+    font-family: "comic";
+    src: url(/static/main/admin/fonts/comic.ttf) format("truetype");
+
+}
+body {
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    background-color:#E5E8FF;
+    #background-image: url(/static/main/admin/images/fongris.jpg);
+    ##background-attachment:fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    font-size:14px;
+    line-height:1.42857143;
+    color:#333;
+}
+
+/* posiciones para pantalla mayo a 1024 px*/
+    .tab_respon{
+      width: 70%;
+
+      margin-left: 20%;
+      background: red;
+    }
+    .titulo_admin{
+      text-align: center;
+      margin-left: 43%;
+      font-size: 2em;
+      font-weight: bold;
+    }
+    .menu-vertical{
+      margin-top: 0%;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      display: inline-block;
+      color: #4b646f;
+      text-decoration: none;
+      line-height: normal;
+      font-size: 15px;
+      font-weight: bold;
+      font-family:arial;
+      height: auto;
+      background: #222d32;
+    }
+    .menu-vertical ul{
+      list-style: none;
+      margin: 0;
+      padding-top: 0%;
+      padding-left: 0%;
+      float: left;
+
+    }
+
+    .menu-vertical ul li{
+      padding: 15px;
+      position: relative;
+      width: 200px;
+      #background: #610B0B;
+      #border-top: 1px solid #DF0101;
+    }
+    .menu-vertical ul ul{
+      transition: all 0.3s;
+      opacity: 0;
+      position: absolute;
+      visibility: hidden;
+    }
+    .menu-vertical ul li a{
+      color:#D8D8D8;
+      text-decoration: none;
+    }
+    .menu-vertical ul li:hover>a{
+      color: #fff;
+
+    }
+    .menu-vertical ul li:hover{
+        border-left: 3px solid #3c8dbc ;
+        background-color: #3C506E;
+    }
+    .user-panel {
+    position: relative;
+    width: 100%;
+    padding: 10px;
+    overflow: hidden;
+    height:70px;
+    }
+    .pull-left {
+    float: left;
+}
+  .pull-left {
+      float: left!important;
+  }
+  .user-panel>.info {
+      padding: 5px 5px 5px 15px;
+      line-height: 2;
+      position: absolute;
+      left: 55px;
+      color: #fff;
+  }
+  .user-panel>.info>a>.fa, .user-panel>.info>a>.ion, .user-panel>.info>a>.glyphicon {
+      margin-right: 3px;
+  }
+  .fa {
+      display: inline-block;
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: inherit;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+  }
+  .text-success {
+      color: #3c763d;
+  }
+  .user-panel>.image>img {
+    width: 100%;
+    max-width: 45px;
+    height: auto;
+}
+.img-circle {
+    border-radius: 50%;
+}
+img {
+    vertical-align: middle;
+}
+img {
+    border: 0;
+}
+
+.doker
+{
+	position: absolute;
+	min-width: 50%;
+	z-index: 2;
+	height: auto;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	box-shadow: 0px 0px 10px 5px #BDBDBD;
+	background: #F2F2F2;
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.3em;
+  color: #337ab7;
+  font-weight: bold;
+	top: 0%;
+	left: 29%;
+
+
+}
+
+/* posiciones para pantalla mayo a 1024 px*/
+    
+    #logo{
+        width: 18%;
+        height:15%;
+        float:right;
+        }
+    #nuevo
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+    }
+    #vendedores img,
+
+    #usuarios img,
+    #categoria img,
+    #reportes img,
+    #ingresar img,
+    #frase img,
+    #nuevo img{
+         width:9%;
+         height:6%;
+
+    }
+    #codigovende img{
+      width:9%;
+      height:45px;
+
+    }
+    #categoria
+
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+
+
+    }
+    #ingresar
+    {
+         position:relative;
+         top:  10%;
+         left: 5%;
+
+
+    }
+    #frase
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+
+    }
+    #ingresarImg,
+    #ingresarMarco,
+    #salir,
+    #usuariosVendedor,
+    #reportes
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+
+
+    }
+    #codigovende
+
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+
+
+    }
+    #vendedores
+
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+
+
+    }
+    #usuarios
+
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+
+
+    }
+    #usuariosVendedor img
+
+    {
+         position: relative;
+         top:  10%;
+         left: 5%;
+         width:8%;
+         height:13%;
+
+
+    }
+    #celda2,
+  #tittle{
+      text-align:center;
+      background-color:#EE5B62;
+      border: 3px solid #B00303;
+
+      font-size:20px;
+
+  }
+
+
+  #celda1,
+   #celda{
+       border: 3px solid #B00303;
+       background-color: #FFA3A7;
+       color: black;
+       text-align: center;
+   }
+  #lista
+  {
+       text-align: center;
+       width:50%;
+       position: absolute;
+       margin-top: 3%;
+       left: 28%;
+       border: 2px solid #CCC8C8;
+       background-color: #fff;
+
+  }
+  #check{
+    cursor: pointer;
+  }
+  .table>thead>tr>th{
+    text-align: center;
+    font-size: 1.5em;
+  }
+  .table>tbody>tr>td{
+    color: #337ab7;
+    text-align: center;
+  }
+  .b_ver{
+    border-radius: 8px;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    font-weight: bold;
+    color:#FFF;
+    width:70px;
+    height:40px;
+
+    }
+  .b_ver:hover{
+    background-color: #286090;
+    border-color: #204d74;
+
+  }
